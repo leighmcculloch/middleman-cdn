@@ -22,8 +22,6 @@ TEXT
       end
 
       def invalidate(options, files)
-        puts "## Invalidating files on CloudFront"
-
         options[:access_key_id] ||= ENV['AWS_ACCESS_KEY_ID']
         options[:secret_access_key] ||= ENV['AWS_SECRET_ACCESS_KEY']
         [:access_key_id, :secret_access_key, :distribution_id].each do |key|
@@ -39,19 +37,22 @@ TEXT
         distribution = cloudfront.distributions.get(options[:distribution_id])
 
         if files.count <= INVALIDATION_LIMIT
-          puts "Invalidating #{files.count} files. It might take 10 to 15 minutes until all files are invalidated."
-          puts 'Please check the AWS Management Console to see the status of the invalidation.'
+          ::Middleman::Cli::CDN.say_status("cloudfront".yellow + " invalidating #{files.count} files... ", incomplete: true)
           invalidation = distribution.invalidations.create(:paths => files)
           raise StandardError, %(Invalidation status is #{invalidation.status}. Expected "InProgress") unless invalidation.status == 'InProgress'
+          ::Middleman::Cli::CDN.say_status("✓".light_green, header: false)
         else
           slices = files.each_slice(INVALIDATION_LIMIT)
-          puts "Invalidating #{files.count} files in #{slices.count} batch(es). It might take 10 to 15 minutes per batch until all files are invalidated."
+          ::Middleman::Cli::CDN.say_status("cloudfront".yellow + " invalidating #{files.count} files in #{slices.count} batch(es) ")
           slices.each_with_index do |slice, i|
-            puts "Invalidating batch #{i + 1}..."
+            ::Middleman::Cli::CDN.say_status("cloudfront".yellow + " invalidating batch #{i + 1}... ", incomplete: true)
             invalidation = distribution.invalidations.create(:paths => slice)
             invalidation.wait_for { ready? } unless i == slices.count - 1
+            ::Middleman::Cli::CDN.say_status("✓".light_green, header: false)
           end
         end
+        ::Middleman::Cli::CDN.say_status("cloudfront".yellow + " It might take 10 to 15 minutes until all files are invalidated.")
+        ::Middleman::Cli::CDN.say_status("cloudfront".yellow + ' Please check the AWS Management Console to see the status of the invalidation.')
       end
     end
 

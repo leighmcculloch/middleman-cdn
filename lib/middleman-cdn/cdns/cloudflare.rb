@@ -22,8 +22,6 @@ TEXT
       end
 
       def invalidate(options, files)
-        puts "## Invalidating files on CloudFlare"
-
         options[:client_api_key] ||= ENV['CLOUDFLARE_CLIENT_API_KEY']
         options[:email] ||= ENV['CLOUDFLARE_EMAIL']
         [:client_api_key, :email, :zone, :base_urls].each do |key|
@@ -41,12 +39,12 @@ TEXT
             cloudflare = ::CloudFlare::connection(options[:client_api_key], options[:email])
             begin
               url = "#{base_url}#{file}"
-              print "Invalidating #{url}... "
+              ::Middleman::Cli::CDN.say_status("cloudflare".yellow + " invalidating #{url}... ", incomplete: true)
               cloudflare.zone_file_purge(options[:zone], "#{base_url}#{file}")
             rescue => e
-              puts "Error: #{e.message}"
+              ::Middleman::Cli::CDN.say_status(", " + "error: #{e.message}".light_red, header: false)
             else
-              puts "✓"
+              ::Middleman::Cli::CDN.say_status("✓".light_green, header: false)
             end
           end
         end

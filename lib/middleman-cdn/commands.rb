@@ -32,15 +32,24 @@ module Middleman
           raise Error, "ERROR: You must specify a config for one of the supported CDNs.\n#{example_configuration}"
         end
 
-        # CloudFront limits the amount of files which can be invalidated by one request to 1000.
-        # If there are more than 1000 files to invalidate, do so sequentially and wait until each validation is ready.
-        # If there are max 1000 files, create the invalidation and return immediately.
         files = list_files(options.filter)
+        ::Middleman::Cli::CDN.say_status("Invalidating #{files.count} files with filter: #{options.filter.source}")
         return if files.empty?
 
         cdns_keyed.each do |cdn_key, cdn|
           cdn_options = options.public_send(cdn_key.to_sym)
           cdn.new.invalidate(cdn_options, files) unless cdn_options.nil?
+        end
+      end
+
+      def self.say_status(status, incomplete: false, header: true)
+        message = ""
+        message << :cdn.to_s.rjust(12).light_green + "  " if header
+        message << status
+        if incomplete
+          print message
+        else
+          puts message
         end
       end
 

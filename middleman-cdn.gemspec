@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'fog', '~> 1.9'
   s.add_dependency 'cloudflare', '~> 2.0'
+  s.add_dependency 'colorize'
 
   s.add_development_dependency 'cucumber', '~> 1.3'
   s.add_development_dependency 'aruba', '~> 0.5'
