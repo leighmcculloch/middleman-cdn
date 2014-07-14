@@ -1,1 +1,1 @@
-require 'middleman-cloudfront'
+require 'middleman-cdn'

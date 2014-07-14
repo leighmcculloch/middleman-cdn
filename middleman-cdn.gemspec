@@ -3,25 +3,23 @@
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-require 'middleman-cloudfront/version'
+require 'middleman-cdn/version'
 
 Gem::Specification.new do |s|
-  s.name        = 'middleman-cloudfront'
-  s.version     = Middleman::CloudFront::VERSION
+  s.name        = 'middleman-cdn'
+  s.version     = Middleman::CDN::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Andrey Korzhuev", "Manuel Meurer"]
-  s.email       = ["andrew@korzhuev.com"]
-  s.homepage    = "https://github.com/andrusha/middleman-cloudfront"
-  s.summary     = %q{Invalidate CloudFront cache after deployment to S3}
-  s.description = %q{Adds ability to invalidate a specific set of files in your CloudFront cache}
-
-  s.rubyforge_project = "middleman-cloudfront"
+  s.authors     = ["Leigh McCulloch","Andrey Korzhuev", "Manuel Meurer"]
+  s.homepage    = "https://github.com/leighmcculloch/middleman-cdn"
+  s.summary     = %q{Invalidate CloudFlare or CloudFront cache after deployment}
+  s.description = %q{Invalidate a specific set of files in your CloudFlare or CloudFront cache}
 
   s.files         = `git ls-files -z`.split("\0")
   s.test_files    = `git ls-files -z -- {fixtures,features}/*`.split("\0")
   s.require_paths = ["lib"]
 
   s.add_dependency 'fog', '~> 1.9'
+  s.add_dependency 'cloudflare', '~> 2.0'
 
   s.add_development_dependency 'cucumber', '~> 1.3'
   s.add_development_dependency 'aruba', '~> 0.5'

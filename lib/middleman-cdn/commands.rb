@@ -1,11 +1,11 @@
 require "middleman-core/cli"
-require "middleman-cloudfront/extension"
+require "middleman-cdn/extension"
 require "fog"
 
 module Middleman
   module Cli
 
-    class CloudFront < Thor
+    class CDN < Thor
       include Thor::Actions
 
       INVALIDATION_LIMIT = 1000
@@ -18,25 +18,25 @@ module Middleman
         true
       end
 
-      desc "cloudfront:invalidate", "A way to deal with your ClodFront distributions"
+      desc "cdn:invalidate", "A way to deal with your CloudFlare or CloudFront distributions"
       def invalidate(options = nil)
         if options.nil?
           app_instance = ::Middleman::Application.server.inst
-          unless app_instance.respond_to?(:cloudfront_options)
+          unless app_instance.respond_to?(:cdn_options)
             raise Error, <<-TEXT
-ERROR: You need to activate the cloudfront extension in config.rb.
+ERROR: You need to activate the cdn extension in config.rb.
 
 The example configuration is:
-activate :cloudfront do |cf|
-  cf.access_key_id     = 'I'
-  cf.secret_access_key = 'love'
-  cf.distribution_id   = 'cats'
-  cf.filter            = /\.html/i  # default /.*/
-  cf.after_build       = true  # default is false
+activate :cdn do |cdn|
+  cdn.access_key_id     = 'I'
+  cdn.secret_access_key = 'love'
+  cdn.distribution_id   = 'cats'
+  cdn.filter            = /\.html/i  # default /.*/
+  cdn.after_build       = true  # default is false
 end
             TEXT
           end
-          options = app_instance.cloudfront_options
+          options = app_instance.cdn_options
         end
         options.filter ||= /.*/
         [:access_key_id, :secret_access_key, :distribution_id, :filter].each do |key|
