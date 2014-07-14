@@ -2,31 +2,38 @@ require 'middleman-core'
 
 module Middleman
   module CDN
-    class Options < Struct.new(:cloudflare, :cloudfront, :filter, :after_build); end
-
-    class << self
-      def options
-        @@cdn_options
+    module Helpers
+      def cdn_options
+        ::Middleman::CDN::CDNExtension.options
       end
+    end
 
-      def registered(app, options_hash = {}, &block)
-        @@cdn_options = Options.new(options_hash)
-        yield @@cdn_options if block_given?
+    class CDNExtension < Middleman::Extension
+      option :cloudflare, nil, 'CloudFlare options'
+      option :cloudfront, nil, 'CloudFront options'
+      option :filter, nil, 'Cloudflare options'
+      option :after_build, false, 'Cloudflare options'
+
+      def initialize(app, options_hash = {}, &block)
+        super
 
         app.after_build do
-          ::Middleman::Cli::CDN.new.invalidate(@@cdn_options) if @@cdn_options.after_build
+          ::Middleman::Cli::CDN.new.invalidate(options) if options.after_build
         end
 
         app.send :include, Helpers
-      end
-      alias :included :registered
-    end
 
-    module Helpers
-      def cdn_options
-        ::Middleman::CDN.options
+        @@cdn_options = options
       end
-    end
 
+      def registered
+        included
+      end
+
+      def self.options
+        @@cdn_options
+      end
+
+    end
   end
 end

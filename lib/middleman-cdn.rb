@@ -1,7 +1,5 @@
 require 'middleman-core'
 require 'middleman-cdn/commands'
+require "middleman-cdn/extension"
 
-::Middleman::Extensions.register(:cdn, ">= 3.0.0") do
-  require "middleman-cdn/extension"
-  ::Middleman::CDN
-end
+::Middleman::Extensions.register(:cdn, ::Middleman::CDN::CDNExtension)
