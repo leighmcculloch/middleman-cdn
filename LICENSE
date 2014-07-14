@@ -1,4 +1,8 @@
-Copyright (c) 2013 Andrey Korzhuev <andrew@korzhuev.com>
+Middleman CDN is:
+Copyright (c) 2014 Leigh McCulloch and licensed with the license below.
+
+Derived from Middleman CloudFront which is:
+Copyright (c) 2013 Andrey Korzhuev and licensed with the license below.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
