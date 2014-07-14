@@ -17,13 +17,13 @@ module Middleman
       def initialize(app, options_hash = {}, &block)
         super
 
+        @@cdn_options = options
+
         app.after_build do
-          ::Middleman::Cli::CDN.new.invalidate(options) if options.after_build
+          ::Middleman::Cli::CDN.new.invalidate(@@cdn_options) if @@cdn_options.after_build
         end
 
         app.send :include, Helpers
-
-        @@cdn_options = options
       end
 
       def registered
