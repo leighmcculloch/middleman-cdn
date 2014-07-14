@@ -1,5 +1,6 @@
 require "middleman-core/cli"
 require "middleman-cdn/extension"
+require "middleman-cdn/cdns/cloudflare.rb"
 require "middleman-cdn/cdns/cloudfront.rb"
 
 module Middleman
@@ -27,8 +28,8 @@ module Middleman
         end
         options.filter ||= /.*/
 
-        if options.cloudfront.nil?
-          raise Error, "ERROR: You must specify a config for cloudfront.\n#{example_configuration}"
+        if cdns.all? { |cdn| options.public_send(cdn.key.to_sym).nil? }
+          raise Error, "ERROR: You must specify a config for one of the supported CDNs.\n#{example_configuration}"
         end
 
         # CloudFront limits the amount of files which can be invalidated by one request to 1000.
@@ -37,17 +38,31 @@ module Middleman
         files = list_files(options.filter)
         return if files.empty?
 
-        CloudFrontCDN.new.invalidate(options, files) if options.cloudfront
+        cdns_keyed.each do |cdn_key, cdn|
+          cdn_options = options.public_send(cdn_key.to_sym)
+          cdn.new.invalidate(cdn_options, files) unless cdn_options.nil?
+        end
       end
 
       protected
+
+      def cdns
+        [
+          CloudFlareCDN,
+          CloudFrontCDN
+        ]
+      end
+
+      def cdns_keyed
+        Hash[cdns.map { |cdn| [cdn.key, cdn] }]
+      end
 
       def example_configuration
         <<-TEXT
 
 The example configuration is:
 activate :cdn do |cdn|
-#{CloudFrontCDN.example_configuration}
+#{cdns.map(&:example_configuration).join}
   cdn.filter            = /\.html/i  # default /.*/
   cdn.after_build       = true  # default is false
 end
