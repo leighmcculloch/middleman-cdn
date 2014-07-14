@@ -2,7 +2,7 @@ require 'middleman-core'
 
 module Middleman
   module CDN
-    class Options < Struct.new(:access_key_id, :secret_access_key, :distribution_id, :filter, :after_build); end
+    class Options < Struct.new(:cloudfront, :filter, :after_build); end
 
     class << self
       def options

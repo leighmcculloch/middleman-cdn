@@ -33,5 +33,6 @@ Gem::Specification.new do |s|
     s.add_development_dependency 'activesupport', '< 4.0.0'
   else
     s.add_dependency 'middleman-core', '~> 3.0'
+    s.add_development_dependency 'activesupport', '~> 4.1'
   end
 end
