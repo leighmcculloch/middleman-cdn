@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'lib/middleman-cdn/cdns/base_protocol'
+require 'fog/aws/models/cdn/distributions'
 
 describe Middleman::Cli::CloudFrontCDN do
   it_behaves_like "BaseCDN"
@@ -26,17 +27,20 @@ describe Middleman::Cli::CloudFrontCDN do
       }
     end
 
+    let(:double_cloudfront) { double('cloudfront', distributions: double('distributions')) }
+    let(:double_distribution) { double('distribution', invalidations: double('invalidations')) }
+
+    let(:files) { [ "/index.html", "/", "/test/index.html", "/test/image.png" ] }
+
     before do
-      allow_any_instance_of(Fog::CDN::AWS::Distributions).to receive(:get).and_return(distribution)
-      allow(distribution.invalidations).to receive(:create) do
-        double('invalidation', status: 'InProgress', wait_for: ->{} )
-      end
+      allow(::Fog::CDN).to receive(:new).and_return(double_cloudfront)
+      allow(double_cloudfront.distributions).to receive(:get).and_return(double_distribution)
+      allow(double_distribution.invalidations).to receive(:create).and_return(double('invalidation', status: 'InProgress', wait_for: ->{}, ready?: true))
     end
 
     it 'gets the correct distribution' do
-      allow(cdn).to receive(:list_files).and_return ['index.html']
-      expect_any_instance_of(Fog::CDN::AWS::Distributions).to receive(:get).with('distribution_id_123')
-      cdn.invalidate(options)
+      expect(double_cloudfront.distributions).to receive(:get).with('distribution_id_123')
+      subject.invalidate(options, files)
     end
 
     context 'when the amount of files to invalidate is under the limit' do
@@ -44,9 +48,8 @@ describe Middleman::Cli::CloudFrontCDN do
         files = (1..Middleman::Cli::CloudFrontCDN::INVALIDATION_LIMIT).map do |i|
           "file_#{i}"
         end
-        allow(cdn).to receive(:list_files).and_return files
-        expect(distribution.invalidations).to receive(:create).once.with(paths: files)
-        cdn.invalidate(options)
+        expect(double_distribution.invalidations).to receive(:create).once.with(paths: files)
+        subject.invalidate(options, files)
       end
     end
 
@@ -55,11 +58,10 @@ describe Middleman::Cli::CloudFrontCDN do
         files = (1..(Middleman::Cli::CloudFrontCDN::INVALIDATION_LIMIT * 3)).map do |i|
           "file_#{i}"
         end
-        allow(cdn).to receive(:list_files).and_return files
-        expect(distribution.invalidations).to receive(:create).once.with(paths: files[0, Middleman::Cli::CloudFrontCDN::INVALIDATION_LIMIT])
-        expect(distribution.invalidations).to receive(:create).once.with(paths: files[Middleman::Cli::CloudFrontCDN::INVALIDATION_LIMIT, Middleman::Cli::CloudFrontCDN::INVALIDATION_LIMIT])
-        expect(distribution.invalidations).to receive(:create).once.with(paths: files[Middleman::Cli::CloudFrontCDN::INVALIDATION_LIMIT * 2, Middleman::Cli::CloudFrontCDN::INVALIDATION_LIMIT])
-        cdn.invalidate(options)
+        expect(double_distribution.invalidations).to receive(:create).once.with(paths: files[0, Middleman::Cli::CloudFrontCDN::INVALIDATION_LIMIT])
+        expect(double_distribution.invalidations).to receive(:create).once.with(paths: files[Middleman::Cli::CloudFrontCDN::INVALIDATION_LIMIT, Middleman::Cli::CloudFrontCDN::INVALIDATION_LIMIT])
+        expect(double_distribution.invalidations).to receive(:create).once.with(paths: files[Middleman::Cli::CloudFrontCDN::INVALIDATION_LIMIT * 2, Middleman::Cli::CloudFrontCDN::INVALIDATION_LIMIT])
+        subject.invalidate(options, files)
       end
     end
   end

@@ -29,7 +29,7 @@ module Middleman
           end
         end
 
-        cloudfront = Fog::CDN.new({
+        cloudfront = ::Fog::CDN.new({
           :provider               => 'AWS',
           :aws_access_key_id      => options[:access_key_id],
           :aws_secret_access_key  => options[:secret_access_key]
