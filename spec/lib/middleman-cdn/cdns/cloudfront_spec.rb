@@ -9,4 +9,11 @@ describe Middleman::Cli::CloudFrontCDN do
       expect(described_class.key).to eq("cloudfront")
     end
   end
+
+  describe '.example_configuration_elements' do
+    it "should contain these keys" do
+      required_keys = [:access_key_id, :secret_access_key, :distribution_id]
+      expect(described_class.example_configuration_elements.keys).to eq(required_keys)
+    end
+  end
 end
