@@ -12,7 +12,7 @@ describe Middleman::Cli::CDN do
         secret_access_key: 'secret_access_key_123',
         distribution_id: 'distribution_id_123',
       },
-      filter: 'filter_123',
+      filter: /.*/,
       after_build: 'after_build_123'
     })
   end
