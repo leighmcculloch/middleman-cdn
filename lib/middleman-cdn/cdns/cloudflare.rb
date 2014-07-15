@@ -23,20 +23,22 @@ module Middleman
         options[:client_api_key] ||= ENV['CLOUDFLARE_CLIENT_API_KEY']
         options[:email] ||= ENV['CLOUDFLARE_EMAIL']
 
-        if [:client_api_key, :email, :zone, :base_urls].any? { |key| options[key].blank? }
-          say_status("Error: Configuration key cloudflare[:#{key}] is missing.".light_red)
-          raise
+        [:client_api_key, :email, :zone, :base_urls].each do |key|
+          if options[key].blank?
+            say_status("Error: Configuration key cloudflare[:#{key}] is missing.".light_red)
+            raise
+          end
         end
 
         options[:base_urls] = [options[:base_urls]] if options[:base_urls].is_a?(String)
-        if !options[:base_urls].is_a?(Array) || options[:base_urls].length == 0
+        if !options[:base_urls].is_a?(Array)
           say_status("Error: Configuration key cloudflare[:base_urls] must be an array and contain at least one base url.".light_red)
           raise
         end
 
+        cloudflare = ::CloudFlare::connection(options[:client_api_key], options[:email])
         options[:base_urls].each do |base_url|
           files.each do |file|
-            cloudflare = ::CloudFlare::connection(options[:client_api_key], options[:email])
             begin
               url = "#{base_url}#{file}"
               say_status("Invalidating #{url}... ", newline: false)
