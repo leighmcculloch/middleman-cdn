@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'fog', '~> 1.9'
   s.add_dependency 'cloudflare', '~> 2.0'
-  s.add_dependency 'colorize'
+  s.add_dependency 'colorize', '~> 0.7'
   s.add_dependency 'activesupport', '~> 4.1'
 
   s.add_development_dependency 'rake', '~> 0.9'
