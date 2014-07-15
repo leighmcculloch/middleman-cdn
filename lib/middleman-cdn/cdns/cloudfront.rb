@@ -4,28 +4,29 @@ require "active_support/core_ext/string"
 module Middleman
   module Cli
 
-    class CloudFrontCDN
+    class CloudFrontCDN < BaseCDN
       INVALIDATION_LIMIT = 1000
 
       def self.key
         "cloudfront"
       end
 
-      def self.example_configuration
-        <<-TEXT
-  cdn.cloudfront = {
-    access_key_id: 'I',          # default ENV['AWS_ACCESS_KEY_ID']
-    secret_access_key: 'love',   # default ENV['AWS_SECRET_ACCESS_KEY']
-    distribution_id: 'cats'
-  }
-TEXT
+      def self.example_configuration_elements
+        {
+          access_key_id: ['"..."', "# default ENV['AWS_ACCESS_KEY_ID']"],
+          secret_access_key: ['"..."', "# default ENV['AWS_SECRET_ACCESS_KEY']"],
+          distribution_id: ['"..."', ""]
+        }
       end
 
       def invalidate(options, files)
         options[:access_key_id] ||= ENV['AWS_ACCESS_KEY_ID']
         options[:secret_access_key] ||= ENV['AWS_SECRET_ACCESS_KEY']
         [:access_key_id, :secret_access_key, :distribution_id].each do |key|
-          raise StandardError, "Configuration key cloudfront[:#{key}] is missing." if options[key].blank?
+          if options[key].blank?
+            say_status("Error: Configuration key cloudfront[:base_urls] is missing.".light_red)
+            raise
+          end
         end
 
         cloudfront = Fog::CDN.new({
@@ -37,22 +38,25 @@ TEXT
         distribution = cloudfront.distributions.get(options[:distribution_id])
 
         if files.count <= INVALIDATION_LIMIT
-          ::Middleman::Cli::CDN.say_status("cloudfront".yellow + " invalidating #{files.count} files... ", incomplete: true)
+          say_status("Invalidating #{files.count} files... ", newline: false)
           invalidation = distribution.invalidations.create(:paths => files)
-          raise StandardError, %(Invalidation status is #{invalidation.status}. Expected "InProgress") unless invalidation.status == 'InProgress'
-          ::Middleman::Cli::CDN.say_status("✓".light_green, header: false)
+          if invalidation.status != 'InProgress'
+            say_status("Invalidation status is #{invalidation.status}. Expected 'InProgress'.".red.bold, header: false)
+            raise
+          end
+          say_status("✔".light_green, header: false)
         else
           slices = files.each_slice(INVALIDATION_LIMIT)
-          ::Middleman::Cli::CDN.say_status("cloudfront".yellow + " invalidating #{files.count} files in #{slices.count} batch(es) ")
+          say_status("Invalidating #{files.count} files in #{slices.count} batch(es) ")
           slices.each_with_index do |slice, i|
-            ::Middleman::Cli::CDN.say_status("cloudfront".yellow + " invalidating batch #{i + 1}... ", incomplete: true)
+            say_status("Invalidating batch #{i + 1}... ", newline: false)
             invalidation = distribution.invalidations.create(:paths => slice)
             invalidation.wait_for { ready? } unless i == slices.count - 1
-            ::Middleman::Cli::CDN.say_status("✓".light_green, header: false)
+            say_status("✔".light_green, header: false)
           end
         end
-        ::Middleman::Cli::CDN.say_status("cloudfront".yellow + " It might take 10 to 15 minutes until all files are invalidated.")
-        ::Middleman::Cli::CDN.say_status("cloudfront".yellow + ' Please check the AWS Management Console to see the status of the invalidation.')
+        say_status("It might take 10 to 15 minutes until all files are invalidated.")
+        say_status('Please check the AWS Management Console to see the status of the invalidation.')
       end
     end
 

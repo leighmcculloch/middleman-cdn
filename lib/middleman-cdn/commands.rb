@@ -1,5 +1,6 @@
 require "middleman-core/cli"
 require "middleman-cdn/extension"
+require "middleman-cdn/cdns/base.rb"
 require "middleman-cdn/cdns/cloudflare.rb"
 require "middleman-cdn/cdns/cloudfront.rb"
 
@@ -33,7 +34,7 @@ module Middleman
         end
 
         files = list_files(options.filter)
-        ::Middleman::Cli::CDN.say_status("Invalidating #{files.count} files with filter: #{options.filter.source}")
+        self.class.say_status(nil, "Invalidating #{files.count} files with filter: " + "#{options.filter.source}".magenta.bold)
         return if files.empty?
 
         cdns_keyed.each do |cdn_key, cdn|
@@ -42,14 +43,15 @@ module Middleman
         end
       end
 
-      def self.say_status(status, incomplete: false, header: true)
+      def self.say_status(cdn, status, newline: true, header: true)
         message = ""
-        message << :cdn.to_s.rjust(12).light_green + "  " if header
+        message << "#{:cdn.to_s.rjust(12).light_green.bold}  #{cdn.try(:yellow).try(:bold)}" if header
+        message << " " if header && cdn
         message << status
-        if incomplete
-          print message
-        else
+        if newline
           puts message
+        else
+          print message
         end
       end
 

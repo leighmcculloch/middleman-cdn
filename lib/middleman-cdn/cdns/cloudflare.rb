@@ -5,33 +5,33 @@ require "active_support/core_ext/string"
 module Middleman
   module Cli
 
-    class CloudFlareCDN
+    class CloudFlareCDN < BaseCDN
       def self.key
         "cloudflare"
       end
 
-      def self.example_configuration
-        <<-TEXT
-  cdn.cloudflare = {
-    client_api_key: 'I',         # default ENV['CLOUDFLARE_CLIENT_API_KEY']
-    email: 'love',               # default ENV['CLOUDFLARE_EMAIL']
-    zone: 'cats',
-    base_urls: ['http://example.com', 'https://example.com']
-  }
-TEXT
+      def self.example_configuration_elements
+        {
+          client_api_key: ['"..."', "# default ENV['CLOUDFLARE_CLIENT_API_KEY']"],
+          email: ['"..."', "# default ENV['CLOUDFLARE_EMAIL']"],
+          zone: ['"..."', ""],
+          base_urls: [['http://example.com', 'https://example.com'], ""]
+        }
       end
 
       def invalidate(options, files)
         options[:client_api_key] ||= ENV['CLOUDFLARE_CLIENT_API_KEY']
         options[:email] ||= ENV['CLOUDFLARE_EMAIL']
-        [:client_api_key, :email, :zone, :base_urls].each do |key|
-          raise StandardError, "Configuration key cloudflare[:#{key}] is missing." if options[key].blank?
+
+        if [:client_api_key, :email, :zone, :base_urls].any? { |key| options[key].blank? }
+          say_status("Error: Configuration key cloudflare[:#{key}] is missing.".light_red)
+          raise
         end
-        if options[:base_urls].is_a?(String)
-          options[:base_urls] = [options[:base_urls]]
-        end
+
+        options[:base_urls] = [options[:base_urls]] if options[:base_urls].is_a?(String)
         if !options[:base_urls].is_a?(Array) || options[:base_urls].length == 0
-          raise StandardError, "Configuration key cloudfront[:base_urls] is missing."
+          say_status("Error: Configuration key cloudflare[:base_urls] must be an array and contain at least one base url.".light_red)
+          raise
         end
 
         options[:base_urls].each do |base_url|
@@ -39,12 +39,12 @@ TEXT
             cloudflare = ::CloudFlare::connection(options[:client_api_key], options[:email])
             begin
               url = "#{base_url}#{file}"
-              ::Middleman::Cli::CDN.say_status("cloudflare".yellow + " invalidating #{url}... ", incomplete: true)
+              say_status("Invalidating #{url}... ", newline: false)
               cloudflare.zone_file_purge(options[:zone], "#{base_url}#{file}")
             rescue => e
-              ::Middleman::Cli::CDN.say_status(", " + "error: #{e.message}".light_red, header: false)
+              say_status(", " + "error: #{e.message}".light_red, header: false)
             else
-              ::Middleman::Cli::CDN.say_status("✓".light_green, header: false)
+              say_status("✔".light_green, header: false)
             end
           end
         end
