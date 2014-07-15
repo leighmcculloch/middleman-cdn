@@ -15,7 +15,6 @@ Gem::Specification.new do |s|
   s.description = %q{Invalidate a specific set of files in your CloudFlare or CloudFront cache}
 
   s.files         = `git ls-files -z`.split("\0")
-  s.test_files    = `git ls-files -z -- {fixtures,features}/*`.split("\0")
   s.require_paths = ["lib"]
 
   s.add_dependency 'fog', '~> 1.9'
