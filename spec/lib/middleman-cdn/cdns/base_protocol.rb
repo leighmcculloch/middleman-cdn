@@ -30,8 +30,8 @@ shared_examples "BaseCDN" do
       expect(described_class.example_configuration).to eq(
       <<-TEXT
   cdn.#{described_class.key} = {
-    key1: "value"              # comment
-    key2: ["arr1", "arr2"]     #
+    key1: "value",             # comment
+    key2: ["arr1", "arr2"],    #
   }
 TEXT
       )

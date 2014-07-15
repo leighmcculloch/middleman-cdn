@@ -3,17 +3,17 @@ A [middleman](http://middlemanapp.com/) deploy tool for invalidating resources c
 on common Content Delivery Networks (CDNs).
 
 * Cache invalidation of files on:
-  * CloudFlare
-  * Amazon CloudFront
+  * [CloudFlare](https://cloudflare.com)
+  * [Fastly](https://fastly.com)
+  * [Amazon CloudFront](http://aws.amazon.com/cloudfront/)
 * Select files for invalidation with regex.  
 * Automatically invalidate after build.
 * Manually trigger invalidation with single command.
 
 What's next?
 
-* Expand the test base.
-* Add support for Fastly.
 * Add support for MaxCDN.
+* Add support for RackspaceCDN (Akamai).
 * [Open an issue](../../issues/new) if you'd like your CDN provider added.
 
 # Usage
@@ -41,10 +41,15 @@ activate :cdn do |cdn|
     zone: 'example.com',
     base_urls: [
       'http://example.com',
-      'http://www.example.com',
       'https://example.com',
-      'https://www.example.com'
     ]
+  }
+  cdn.fastly = {
+    api_key: '...',                 # default ENV['FASTLY_API_KEY']
+    base_urls: [
+      'http://www.example.com',
+      'https://www.example.com'
+    ],
   }
   cdn.cloudfront = {
     access_key_id: '...',           # default ENV['AWS_ACCESS_KEY_ID']
@@ -83,7 +88,7 @@ The `cloudflare` parameter contains the information specific to your CloudFlare
 account and which zone (domain) files should be invalidated for. CloudFlare
 invalidation works off URLs not filenames, and you must provide a list of
 base urls to ensure we invalidate every URL that your files might be accessed
-from.
+at.
 
 | Parameter | Description |
 |:--------- |:----------- |
@@ -92,7 +97,21 @@ from.
 | `zone` | The domain name of the website we are invalidating. |
 | `base_urls` | An array of base URLs that the files are accessible at. |
 
-CloudFlare invalidations take mere seconds.
+CloudFlare invalidations often take a few seconds.
+
+### Configuration: Fastly
+
+The `fastly` parameter contains the information specific to your Fastly
+account. Fastly invalidation works off URLs not filenames, and you must provide
+a list of base urls to ensure we invalidate every URL that your files might be
+at.
+
+| Parameter | Description |
+|:--------- |:----------- |
+| `api_key` | You can find this by logging into Fastly, going to your account page and it will be on the left. |
+| `base_urls` | An array of base URLs that the files are accessible at. |
+
+Fastly invalidations often take a few seconds.
 
 ### Configuration: CloudFront
 
@@ -115,7 +134,7 @@ on github, store them in environment variables, or execute on the
 commandline as:
 
 ```bash
-CLOUDFLARE_CLIENT_API_KEY= CLOUDFLARE_EMAIL= AWS_ACCESS_KEY= AWS_SECRET= bundle exec middleman invalidate
+CLOUDFLARE_CLIENT_API_KEY= CLOUDFLARE_EMAIL= FASTLY_API_KEY= AWS_ACCESS_KEY= AWS_SECRET= bundle exec middleman invalidate
 ```
 
 ## Invalidating
@@ -148,6 +167,6 @@ Thanks to @b4k3r for the [Cloudflare gem](https://github.com/b4k3r/cloudflare) t
 
 ## Why Middleman CDN
 
-Middleman CloudFront is a great extension for Middleman and perfect if you're using CloudFront. I use CloudFlare primarily and I wanted to create a similar extension for it specifically. However, it's becoming increasingly common for static websites to be hosted across multiple CDNs. [jsDelivr](http://jsdelivr.com/) is a well known promoter of this strategy.  
+Middleman CloudFront is a great extension for Middleman and perfect if you're using CloudFront. I needed a similar extension for CloudFlare, however it's becoming increasingly common for static websites to be hosted across multiple CDNs. [jsDelivr](http://jsdelivr.com/) is a well known promoter of this strategy.  
 
 In light of the new trends in how we are using CDNs, I decided it would be more worthwhile to create an extension that can grow to support all the popular CDNs.

@@ -4,7 +4,7 @@ module Middleman
     class BaseCDN
       def self.example_configuration
         config_lines = self.example_configuration_elements.map do |config_key, config_info|
-          "    #{config_key.to_s}: #{config_info[0]}".ljust(30) + " #{config_info[1]}"
+          "    #{config_key.to_s}: #{config_info[0]},".ljust(30) + " #{config_info[1]}"
         end
 
         <<-TEXT

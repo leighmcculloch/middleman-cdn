@@ -11,6 +11,7 @@ module Middleman
     class CDNExtension < Middleman::Extension
       option :cloudflare, nil, 'CloudFlare options'
       option :cloudfront, nil, 'CloudFront options'
+      option :fastly, nil, 'Fastly options'
       option :filter, nil, 'Cloudflare options'
       option :after_build, false, 'Cloudflare options'
 
