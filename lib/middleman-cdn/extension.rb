@@ -21,7 +21,7 @@ module Middleman
 
         app.after_configuration do
           app.after_build do
-            ::Middleman::Cli::CDN.new.invalidate(@@cdn_options) if @@cdn_options.after_build
+            ::Middleman::Cli::CDN.new.cdn_invalidate(@@cdn_options) if @@cdn_options.after_build
           end
         end
 

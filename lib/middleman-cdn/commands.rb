@@ -13,14 +13,14 @@ module Middleman
 
       check_unknown_options!
 
-      namespace :invalidate
+      namespace :cdn_invalidate
 
       def self.exit_on_failure?
         true
       end
 
-      desc "cdn:invalidate", "A way to deal with your CloudFlare or CloudFront distributions"
-      def invalidate(options = nil)
+      desc "cdn:cdn_invalidate", "Invalidate your CloudFlare or CloudFront cache"
+      def cdn_invalidate(options = nil)
         if options.nil?
           app_instance = ::Middleman::Application.server.inst
           unless app_instance.respond_to?(:cdn_options)
@@ -105,6 +105,6 @@ end
 
     end
 
-    Base.map({"inv" => "invalidate"})
+    Base.map({"cdn" => "cdn_invalidate"})
   end
 end

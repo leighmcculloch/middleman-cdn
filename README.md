@@ -125,14 +125,14 @@ Set `after_build` to `true` and the cache will be invalidated after build:
 bundle exec middleman build
 ```
 
-Invalidate manually using:  
+Or, invalidate manually using:  
 ```bash
-bundle exec middleman invalidate
+bundle exec middleman cdn_invalidate
 ```
 
 Or:
 ```bash
-bundle exec middleman inv
+bundle exec middleman cdn
 ```
 
 ## Example Usage
