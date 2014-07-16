@@ -1,7 +1,5 @@
 # Middleman CDN [![Build Status](https://travis-ci.org/leighmcculloch/middleman-cdn.svg)](https://travis-ci.org/leighmcculloch/middleman-cdn) [![Dependency Status](https://gemnasium.com/leighmcculloch/middleman-cdn.png)](https://gemnasium.com/leighmcculloch/middleman-cdn)
 
-**Build status failing due to [RubyGem's issues affecting some gems](https://twitter.com/rubygems_status/statuses/489119131862462464). Tests do pass.**
-
 A [middleman](http://middlemanapp.com/) deploy tool for invalidating resources cached
 on common Content Delivery Networks (CDNs).
 
