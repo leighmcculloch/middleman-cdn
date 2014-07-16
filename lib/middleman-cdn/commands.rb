@@ -24,14 +24,16 @@ module Middleman
         if options.nil?
           app_instance = ::Middleman::Application.server.inst
           unless app_instance.respond_to?(:cdn_options)
-            raise Error, "ERROR: You need to activate the cdn extension in config.rb.\n#{example_configuration}"
+            self.class.say_status(nil, "Error: You need to activate the cdn extension in config.rb.\n#{example_configuration}".light_red)
+            raise
           end
           options = app_instance.cdn_options
         end
         options.filter ||= /.*/
 
         if cdns.all? { |cdn| options.public_send(cdn.key.to_sym).nil? }
-          raise Error, "ERROR: You must specify a config for one of the supported CDNs.\n#{example_configuration}"
+          self.class.say_status(nil, "Error: You must specify a config for one of the supported CDNs.\n#{example_configuration}".light_red)
+          raise
         end
 
         files = list_files(options.filter)
@@ -56,7 +58,7 @@ module Middleman
         end
       end
 
-      protected
+      private
 
       def cdns
         [
@@ -72,7 +74,7 @@ module Middleman
       def example_configuration
         <<-TEXT
 
-The example configuration is:
+Example configuration:
 activate :cdn do |cdn|
 #{cdns.map(&:example_configuration).join}
   cdn.filter            = /\.html/i  # default /.*/
