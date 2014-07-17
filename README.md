@@ -159,8 +159,11 @@ on github, store them in environment variables, or execute on the
 commandline as:
 
 ```bash
-CLOUDFLARE_CLIENT_API_KEY= CLOUDFLARE_EMAIL= FASTLY_API_KEY= AWS_ACCESS_KEY= AWS_SECRET= bundle exec middleman invalidate
+CLOUDFLARE_CLIENT_API_KEY= CLOUDFLARE_EMAIL= bundle exec middleman invalidate
 ```
+
+In the configuration above any with a default of `ENV["...']` can be stored
+as environment variables or provided on the commandline.
 
 ## Invalidating
 
