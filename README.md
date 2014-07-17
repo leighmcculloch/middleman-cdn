@@ -156,14 +156,13 @@ the invalidation in your AWS Console.
 
 Instead of storing your CDN credentials in config.rb where they may be public
 on github, store them in environment variables, or execute on the
-commandline as:
+commandline as. Any parameters with a default of `ENV[...]` (see above) can be stored
+as environment variables or provided on the commandline like this example.
 
 ```bash
 CLOUDFLARE_CLIENT_API_KEY= CLOUDFLARE_EMAIL= bundle exec middleman invalidate
 ```
 
-In the configuration above any with a default of `ENV["...']` can be stored
-as environment variables or provided on the commandline.
 
 ## Invalidating
 
