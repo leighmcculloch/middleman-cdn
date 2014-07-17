@@ -7,14 +7,14 @@ on common Content Delivery Networks (CDNs).
 * Cache invalidation of files on:
   * [CloudFlare](https://cloudflare.com)
   * [Fastly](https://fastly.com)
-  * [Amazon CloudFront](http://aws.amazon.com/cloudfront/)
+  * [MaxCDN](https://maxcdn.com)
+  * [Amazon CloudFront](https://aws.amazon.com/cloudfront/)
 * Select files for invalidation with regex.  
 * Automatically invalidate after build.
 * Manually trigger invalidation with single command.
 
 What's next?
 
-* Add support for MaxCDN.
 * Add support for RackspaceCDN (Akamai).
 * [Open an issue](../../issues/new) if you'd like your CDN provider added.
 
@@ -52,6 +52,12 @@ activate :cdn do |cdn|
       'http://www.example.com',
       'https://www.example.com'
     ],
+  }
+  cdn.maxcdn = {
+    alias: "...",                   # default ENV['MAXCDN_ALIAS']
+    consumer_key: "...",            # default ENV['MAXCDN_CONSUMER_KEY']
+    consumer_secret: "...",         # default ENV['MAXCDN_CONSUMER_SECRET']
+    zone_id: "...",
   }
   cdn.cloudfront = {
     access_key_id: '...',           # default ENV['AWS_ACCESS_KEY_ID']
@@ -114,6 +120,23 @@ at.
 | `base_urls` | An array of base URLs that the files are accessible at. |
 
 Fastly invalidations often take a few seconds.
+
+### Configuration: MaxCDN
+
+The `maxcdn` parameter contains the information specific to your MaxCDN
+account. You'll need to create an `application` in your MaxCDN account which
+will provide you with API keys, and your alias can be found on the API tab of
+your account page. The extension works by invalidating files in pull zones.
+Make sure you add your website as a pull zone.
+
+| Parameter | Description |
+|:--------- |:----------- |
+| `alias` | You can find this by logging into MaxCDN, going to your account page, and then going to the API tab and it will be down the bottom right. |
+| `consumer_key` | You can find this by logging into MaxCDN, going to your account page, and then going to the API tab and creating an application which will give you a key and secret. |
+| `secret_key` | You can find this by logging into MaxCDN, going to your account page, and then going to the API tab and creating an application which will give you a key and secret. |
+| `zone_id` | Each pull zone has a zone_id, you'll find this in your account. |
+
+MaxCDN invalidations often take a few seconds.
 
 ### Configuration: CloudFront
 
