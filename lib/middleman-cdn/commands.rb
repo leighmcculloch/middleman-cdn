@@ -39,6 +39,7 @@ module Middleman
 
         files = list_files(options.filter)
         self.class.say_status(nil, "Invalidating #{files.count} files with filter: " + "#{options.filter.source}".magenta.bold)
+        files.each { |file| self.class.say_status(nil, " • #{file}") }
         return if files.empty?
 
         cdns_keyed.each do |cdn_key, cdn|
