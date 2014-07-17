@@ -1,3 +1,6 @@
+require 'coveralls'
+Coveralls.wear!
+
 require 'middleman-cdn'
 
 RSpec.configure do |config|

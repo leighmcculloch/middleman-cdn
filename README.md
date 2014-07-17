@@ -1,5 +1,5 @@
 # Middleman CDN
-[![Gem Version](https://badge.fury.io/rb/middleman-cdn.svg)](http://badge.fury.io/rb/middleman-cdn) [![Build Status](https://travis-ci.org/leighmcculloch/middleman-cdn.svg)](https://travis-ci.org/leighmcculloch/middleman-cdn) [![Dependency Status](https://gemnasium.com/leighmcculloch/middleman-cdn.png)](https://gemnasium.com/leighmcculloch/middleman-cdn)
+[![Gem Version](https://badge.fury.io/rb/middleman-cdn.svg)](http://badge.fury.io/rb/middleman-cdn) [![Build Status](https://travis-ci.org/leighmcculloch/middleman-cdn.svg)](https://travis-ci.org/leighmcculloch/middleman-cdn) [![Coverage Status](https://img.shields.io/coveralls/leighmcculloch/middleman-cdn.svg)](https://coveralls.io/r/leighmcculloch/middleman-cdn) [![Dependency Status](https://gemnasium.com/leighmcculloch/middleman-cdn.png)](https://gemnasium.com/leighmcculloch/middleman-cdn)
 
 A [middleman](http://middlemanapp.com/) deploy tool for invalidating resources cached
 on common Content Delivery Networks (CDNs).
