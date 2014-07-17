@@ -124,10 +124,10 @@ Fastly invalidations often take a few seconds.
 ### Configuration: MaxCDN
 
 The `maxcdn` parameter contains the information specific to your MaxCDN
-account. You'll need to create an `application` in your MaxCDN account which
-will provide you with API keys, and your alias can be found on the API tab of
-your account page. The extension works by invalidating files in pull zones.
-Make sure you add your website as a pull zone.
+account. Your `alias` can be found on the API tab of your MaxCDN account page,
+and you'll need to create an `application` in your MaxCDN account which
+will provide you with API keys. The extension works by invalidating files 
+in pull zones. Make sure you add your website as a pull zone.
 
 | Parameter | Description |
 |:--------- |:----------- |
