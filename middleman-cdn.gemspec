@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'maxcdn', '~> 0.1'
   s.add_dependency 'colorize', '~> 0.7'
   s.add_dependency 'activesupport', '~> 4.1'
+  s.add_dependency 'httparty', '~> 0.13'
 
   s.add_development_dependency 'rake', '~> 0.9'
   s.add_development_dependency 'rspec', '~> 3.0'

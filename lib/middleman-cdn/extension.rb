@@ -13,6 +13,7 @@ module Middleman
       option :cloudfront, nil, 'CloudFront options'
       option :fastly, nil, 'Fastly options'
       option :maxcdn, nil, 'MaxCDN options'
+      option :rackspace, nil, 'Rackspace options'
       option :filter, nil, 'Cloudflare options'
       option :after_build, false, 'Cloudflare options'
 

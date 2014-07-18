@@ -5,6 +5,7 @@ require "middleman-cdn/cdns/cloudflare.rb"
 require "middleman-cdn/cdns/cloudfront.rb"
 require "middleman-cdn/cdns/fastly.rb"
 require "middleman-cdn/cdns/maxcdn.rb"
+require "middleman-cdn/cdns/rackspace.rb"
 require "colorize"
 
 module Middleman
@@ -70,7 +71,8 @@ module Middleman
           CloudFlareCDN,
           CloudFrontCDN,
           FastlyCDN,
-          MaxCDN
+          MaxCDN,
+          RackspaceCDN
         ]
       end
 
