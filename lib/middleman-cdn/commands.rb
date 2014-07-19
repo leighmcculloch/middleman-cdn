@@ -23,29 +23,33 @@ module Middleman
 
       desc "cdn:cdn_invalidate", "Invalidate your CloudFlare or CloudFront cache"
       def cdn_invalidate(options = nil)
-        if options.nil?
-          app_instance = ::Middleman::Application.server.inst
-          unless app_instance.respond_to?(:cdn_options)
-            self.class.say_status(nil, "Error: You need to activate the cdn extension in config.rb.\n#{example_configuration}".light_red)
+        begin
+          if options.nil?
+            app_instance = ::Middleman::Application.server.inst
+            unless app_instance.respond_to?(:cdn_options)
+              self.class.say_status(nil, "Error: You need to activate the cdn extension in config.rb.\n#{example_configuration}".light_red)
+              raise
+            end
+            options = app_instance.cdn_options
+          end
+          options.filter ||= /.*/
+
+          if cdns.all? { |cdn| options.public_send(cdn.key.to_sym).nil? }
+            self.class.say_status(nil, "Error: You must specify a config for one of the supported CDNs.\n#{example_configuration}".light_red)
             raise
           end
-          options = app_instance.cdn_options
-        end
-        options.filter ||= /.*/
 
-        if cdns.all? { |cdn| options.public_send(cdn.key.to_sym).nil? }
-          self.class.say_status(nil, "Error: You must specify a config for one of the supported CDNs.\n#{example_configuration}".light_red)
-          raise
-        end
+          files = list_files(options.filter)
+          self.class.say_status(nil, "Invalidating #{files.count} files with filter: " + "#{options.filter.source}".magenta.bold)
+          files.each { |file| self.class.say_status(nil, " • #{file}") }
+          return if files.empty?
 
-        files = list_files(options.filter)
-        self.class.say_status(nil, "Invalidating #{files.count} files with filter: " + "#{options.filter.source}".magenta.bold)
-        files.each { |file| self.class.say_status(nil, " • #{file}") }
-        return if files.empty?
-
-        cdns_keyed.each do |cdn_key, cdn|
-          cdn_options = options.public_send(cdn_key.to_sym)
-          cdn.new.invalidate(cdn_options, files) unless cdn_options.nil?
+          cdns_keyed.each do |cdn_key, cdn|
+            cdn_options = options.public_send(cdn_key.to_sym)
+            cdn.new.invalidate(cdn_options, files) unless cdn_options.nil?
+          end
+        rescue SystemExit, Interrupt
+          self.class.say_status(nil, nil, header: false)
         end
       end
 
@@ -53,7 +57,7 @@ module Middleman
         message = ""
         message << "#{:cdn.to_s.rjust(12).light_green.bold}  #{cdn.try(:yellow).try(:bold)}" if header
         message << " " if header && cdn
-        message << status
+        message << status if status
         if newline
           puts message
         else
