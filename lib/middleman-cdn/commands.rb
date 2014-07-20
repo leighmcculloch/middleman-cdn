@@ -53,16 +53,14 @@ module Middleman
         end
       end
 
-      def self.say_status(cdn, status, newline: true, header: true)
+      def self.say_status(cdn, status, newline: true, header: true, wait_enter: false)
         message = ""
         message << "#{:cdn.to_s.rjust(12).light_green.bold}  #{cdn.try(:yellow).try(:bold)}" if header
         message << " " if header && cdn
         message << status if status
-        if newline
-          puts message
-        else
-          print message
-        end
+        print message
+        STDIN.noecho(&:gets) if wait_enter
+        puts "" if newline
       end
 
       private

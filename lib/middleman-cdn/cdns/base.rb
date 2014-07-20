@@ -14,8 +14,8 @@ module Middleman
         TEXT
       end
 
-      def say_status(status, newline: true, header: true)
-        ::Middleman::Cli::CDN.say_status(self.class.key, status, newline: newline, header: header)
+      def say_status(status, newline: true, header: true, wait_enter: false)
+        ::Middleman::Cli::CDN.say_status(self.class.key, status, newline: newline, header: header, wait_enter: wait_enter)
       end
     end
 

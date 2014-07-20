@@ -40,12 +40,12 @@ TEXT
 
   describe "#say_status" do
     it "should use the Cli CDN class to say status" do
-      expect(::Middleman::Cli::CDN).to receive(:say_status).with(described_class.key, "status text", newline: false, header: false)
+      expect(::Middleman::Cli::CDN).to receive(:say_status).with(described_class.key, "status text", newline: false, header: false, wait_enter: false)
       subject.say_status("status text", newline: false, header: false)
     end
 
     it "should use the Cli CDN class to say status with defaults" do
-      expect(::Middleman::Cli::CDN).to receive(:say_status).with(described_class.key, "status text", newline: true, header: true)
+      expect(::Middleman::Cli::CDN).to receive(:say_status).with(described_class.key, "status text", newline: true, header: true, wait_enter: false)
       subject.say_status("status text")
     end
   end
