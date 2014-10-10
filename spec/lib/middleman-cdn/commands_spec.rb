@@ -112,5 +112,22 @@ describe Middleman::Cli::CDN do
         subject.cdn_invalidate(options)
       end
     end
+
+    context "list of files provided" do
+      let(:options) do
+        OpenStruct.new({
+          cloudflare: {},
+          cloudfront: {},
+          fastly: {}
+        })
+      end
+
+      it "should invalidate the files with all cdns" do
+        expect_any_instance_of(::Middleman::Cli::CloudFlareCDN).to receive(:invalidate).with(options.cloudflare, ["/index.html", "/"])
+        expect_any_instance_of(::Middleman::Cli::CloudFrontCDN).to receive(:invalidate).with(options.cloudfront, ["/index.html", "/"])
+        expect_any_instance_of(::Middleman::Cli::FastlyCDN).to receive(:invalidate).with(options.cloudfront, ["/index.html", "/"])
+        subject.cdn_invalidate(options, ["index.html"])
+      end
+    end
   end
 end
