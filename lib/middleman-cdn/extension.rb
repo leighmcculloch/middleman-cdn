@@ -3,6 +3,10 @@ require 'middleman-core'
 module Middleman
   module CDN
     module Helpers
+      def cdn_invalidate(files = nil)
+        ::Middleman::Cli::CDN.new.cdn_invalidate(cdn_options, files)
+      end
+
       def cdn_options
         ::Middleman::CDN::CDNExtension.options
       end
@@ -24,7 +28,7 @@ module Middleman
 
         app.after_configuration do
           app.after_build do
-            ::Middleman::Cli::CDN.new.cdn_invalidate(@@cdn_options) if @@cdn_options.after_build
+            cdn_invalidate if cdn_options.after_build
           end
         end
 
