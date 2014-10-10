@@ -19,7 +19,7 @@ module Middleman
         }
       end
 
-      def invalidate(options, files)
+      def invalidate(options, files, all: false)
         options[:alias] ||= ENV['MAXCDN_ALIAS']
         options[:consumer_key] ||= ENV['MAXCDN_CONSUMER_KEY']
         options[:consumer_secret] ||= ENV['MAXCDN_CONSUMER_SECRET']

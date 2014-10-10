@@ -19,7 +19,7 @@ module Middleman
         }
       end
 
-      def invalidate(options, files)
+      def invalidate(options, files, all: false)
         options[:client_api_key] ||= ENV['CLOUDFLARE_CLIENT_API_KEY']
         options[:email] ||= ENV['CLOUDFLARE_EMAIL']
 
@@ -37,16 +37,27 @@ module Middleman
         end
 
         cloudflare = ::CloudFlare::connection(options[:client_api_key], options[:email])
-        options[:base_urls].each do |base_url|
-          files.each do |file|
-            begin
-              url = "#{base_url}#{file}"
-              say_status("Invalidating #{url}... ", newline: false)
-              cloudflare.zone_file_purge(options[:zone], "#{base_url}#{file}")
-            rescue => e
-              say_status(", " + "error: #{e.message}".light_red, header: false)
-            else
-              say_status("✔".light_green, header: false)
+        if all
+          begin
+            say_status("Invalidating zone #{options[:zone]}... ", newline: false)
+            cloudflare.fpurge_ts(options[:zone])
+          rescue => e
+            say_status(", " + "error: #{e.message}".light_red, header: false)
+          else
+            say_status("✔".light_green, header: false)
+          end
+        else
+          options[:base_urls].each do |base_url|
+            files.each do |file|
+              begin
+                url = "#{base_url}#{file}"
+                say_status("Invalidating #{url}... ", newline: false)
+                cloudflare.zone_file_purge(options[:zone], "#{base_url}#{file}")
+              rescue => e
+                say_status(", " + "error: #{e.message}".light_red, header: false)
+              else
+                say_status("✔".light_green, header: false)
+              end
             end
           end
         end

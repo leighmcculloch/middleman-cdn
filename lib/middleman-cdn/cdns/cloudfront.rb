@@ -19,7 +19,7 @@ module Middleman
         }
       end
 
-      def invalidate(options, files)
+      def invalidate(options, files, all: false)
         options[:access_key_id] ||= ENV['AWS_ACCESS_KEY_ID']
         options[:secret_access_key] ||= ENV['AWS_SECRET_ACCESS_KEY']
         [:access_key_id, :secret_access_key, :distribution_id].each do |key|

@@ -22,7 +22,7 @@ module Middleman
         }
       end
 
-      def invalidate(options, files)
+      def invalidate(options, files, all: false)
         options[:username] ||= ENV['RACKSPACE_USERNAME']
         options[:api_key] ||= ENV['RACKSPACE_API_KEY']
 

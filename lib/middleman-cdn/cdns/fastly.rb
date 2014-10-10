@@ -17,7 +17,7 @@ module Middleman
         }
       end
 
-      def invalidate(options, files)
+      def invalidate(options, files, all: false)
         options[:api_key] ||= ENV['FASTLY_API_KEY']
 
         [:api_key, :base_urls].each do |key|

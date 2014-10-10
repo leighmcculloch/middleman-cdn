@@ -73,6 +73,22 @@ describe Middleman::Cli::CloudFlareCDN do
         expect { subject.invalidate(options, files) }.to output(/✔/).to_stdout
       end
 
+      context "matches all files" do
+        before do
+          allow(double_cloudflare).to receive(:fpurge_ts)
+        end
+
+        it "should invalidate the entire zone" do
+          expect(double_cloudflare).to receive(:fpurge_ts).once.with("example.com")
+          subject.invalidate(options, files, all: true)
+        end
+
+        it "should not invalidate individual files" do
+          expect(double_cloudflare).not_to receive(:zone_file_purge)
+          subject.invalidate(options, files, all: true)
+        end
+      end
+
       context "and errors occurs when purging" do
         before do
           allow(double_cloudflare).to receive(:zone_file_purge).and_raise(StandardError)

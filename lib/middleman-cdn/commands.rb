@@ -45,9 +45,11 @@ module Middleman
           files.each { |file| self.class.say_status(nil, " • #{file}") }
           return if files.empty?
 
+          invalidate_all = does_filter_match_all(options.filter)
+
           cdns_keyed.each do |cdn_key, cdn|
             cdn_options = options.public_send(cdn_key.to_sym)
-            cdn.new.invalidate(cdn_options, files) unless cdn_options.nil?
+            cdn.new.invalidate(cdn_options, files, all: invalidate_all) unless cdn_options.nil?
           end
         rescue SystemExit, Interrupt
           self.class.say_status(nil, nil, header: false)
@@ -90,6 +92,10 @@ activate :cdn do |cdn|
   cdn.after_build       = true  # default is false
 end
         TEXT
+      end
+
+      def does_filter_match_all(filter)
+        [".*", ".+"].include?(filter.source)
       end
 
       def list_files(filter)
