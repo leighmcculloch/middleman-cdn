@@ -40,8 +40,8 @@ module Middleman
             raise
           end
 
-          files = list_files(options.filter)
-          self.class.say_status(nil, "Invalidating #{files.count} files with filter: " + "#{options.filter.source}")
+          files = normalize_files(list_files(options.filter))
+          self.class.say_status(nil, "Invalidating #{files.count} files with filter: " + "#{options.filter.source}".magenta.bold)
           files.each { |file| self.class.say_status(nil, " • #{file}") }
           return if files.empty?
 
@@ -106,20 +106,21 @@ end
 
             # Remove files that do not match filter
             files.reject! { |f| f !~ filter }
-
-            # Add directories of index.html files since they have to be
-            # invalidated as well if :directory_indexes is active
-            files.each do |file|
-              file_dir = file.sub(/\bindex\.html\z/, '')
-              files << file_dir if file_dir != file
-            end
-
-            # Add leading slash
-            files.map! { |f| f.start_with?('/') ? f : "/#{f}" }
           end
         end
       end
 
+      def normalize_files(files)
+        # Add directories of index.html files since they have to be
+        # invalidated as well if :directory_indexes is active
+        files.each do |file|
+          file_dir = file.sub(/\bindex\.html\z/, '')
+          files << file_dir if file_dir != file
+        end
+
+        # Add leading slash
+        files.map! { |f| f.start_with?('/') ? f : "/#{f}" }
+      end
     end
 
     Base.map({"cdn" => "cdn_invalidate"})
