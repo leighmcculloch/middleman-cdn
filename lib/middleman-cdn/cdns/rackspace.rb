@@ -22,13 +22,13 @@ module Middleman
         }
       end
 
-      def invalidate(options, files)
+      def invalidate(options, files, all: false)
         options[:username] ||= ENV['RACKSPACE_USERNAME']
         options[:api_key] ||= ENV['RACKSPACE_API_KEY']
 
         [:username, :api_key, :region, :container].each do |key|
           if options[key].blank?
-            say_status("Error: Configuration key rackspace[:#{key}] is missing.".light_red)
+            say_status("Error: Configuration key rackspace[:#{key}] is missing.".red)
             raise
           end
         end
@@ -54,9 +54,9 @@ module Middleman
           say_status("Invalidating #{file}...", newline: false)
           rackspace_client.invalidate(region, container, file, notification_email: notification_email)
         rescue => e
-          say_status(" error: #{e.message}".light_red, header: false)
+          say_status(" error: #{e.message}".red, header: false)
         else
-          say_status("✔".light_green, header: false)
+          say_status("✔".green, header: false)
         end
       end
     end

@@ -19,14 +19,14 @@ module Middleman
         }
       end
 
-      def invalidate(options, files)
+      def invalidate(options, files, all: false)
         options[:alias] ||= ENV['MAXCDN_ALIAS']
         options[:consumer_key] ||= ENV['MAXCDN_CONSUMER_KEY']
         options[:consumer_secret] ||= ENV['MAXCDN_CONSUMER_SECRET']
 
         [:alias, :consumer_key, :consumer_secret, :zone_id].each do |key|
           if options[key].blank?
-            say_status("Error: Configuration key maxcdn[:#{key}] is missing.".light_red)
+            say_status("Error: Configuration key maxcdn[:#{key}] is missing.".red)
             raise
           end
         end
@@ -37,9 +37,9 @@ module Middleman
           say_status("Invalidating #{files.count} files...", newline: false)
           maxcdn.purge(options[:zone_id], files)
         rescue => e
-          say_status(", " + "error: #{e.message}".light_red, header: false)
+          say_status(", " + "error: #{e.message}".red, header: false)
         else
-          say_status("✔".light_green, header: false)
+          say_status("✔".green, header: false)
         end
       end
     end
