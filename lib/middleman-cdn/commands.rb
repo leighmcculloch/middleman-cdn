@@ -28,7 +28,7 @@ module Middleman
           if options.nil?
             app_instance = ::Middleman::Application.server.inst
             unless app_instance.respond_to?(:cdn_options)
-              self.class.say_status(nil, "Error: You need to activate the cdn extension in config.rb.\n#{example_configuration}".light_red)
+              self.class.say_status(nil, "Error: You need to activate the cdn extension in config.rb.\n#{example_configuration}".red)
               raise
             end
             options = app_instance.cdn_options
@@ -36,12 +36,12 @@ module Middleman
           options.filter ||= /.*/
 
           if cdns.all? { |cdn| options.public_send(cdn.key.to_sym).nil? }
-            self.class.say_status(nil, "Error: You must specify a config for one of the supported CDNs.\n#{example_configuration}".light_red)
+            self.class.say_status(nil, "Error: You must specify a config for one of the supported CDNs.\n#{example_configuration}".red)
             raise
           end
 
           files = list_files(options.filter)
-          self.class.say_status(nil, "Invalidating #{files.count} files with filter: " + "#{options.filter.source}".magenta.bold)
+          self.class.say_status(nil, "Invalidating #{files.count} files with filter: " + "#{options.filter.source}")
           files.each { |file| self.class.say_status(nil, " • #{file}") }
           return if files.empty?
 
@@ -58,7 +58,7 @@ module Middleman
 
       def self.say_status(cdn, status, newline: true, header: true, wait_enter: false)
         message = ""
-        message << "#{:cdn.to_s.rjust(12).light_green.bold}  #{cdn.try(:yellow).try(:bold)}" if header
+        message << "#{:cdn.to_s.rjust(12).green}  #{cdn.try(:yellow)}" if header
         message << " " if header && cdn
         message << status if status
         print message

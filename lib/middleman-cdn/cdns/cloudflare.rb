@@ -25,14 +25,14 @@ module Middleman
 
         [:client_api_key, :email, :zone, :base_urls].each do |key|
           if options[key].blank?
-            say_status("Error: Configuration key cloudflare[:#{key}] is missing.".light_red)
+            say_status("Error: Configuration key cloudflare[:#{key}] is missing.".red)
             raise
           end
         end
 
         options[:base_urls] = [options[:base_urls]] if options[:base_urls].is_a?(String)
         if !options[:base_urls].is_a?(Array)
-          say_status("Error: Configuration key cloudflare[:base_urls] must be an array and contain at least one base url.".light_red)
+          say_status("Error: Configuration key cloudflare[:base_urls] must be an array and contain at least one base url.".red)
           raise
         end
 
@@ -42,9 +42,9 @@ module Middleman
             say_status("Invalidating zone #{options[:zone]}... ", newline: false)
             cloudflare.fpurge_ts(options[:zone])
           rescue => e
-            say_status(", " + "error: #{e.message}".light_red, header: false)
+            say_status(", " + "error: #{e.message}".red, header: false)
           else
-            say_status("✔".light_green, header: false)
+            say_status("✔".green, header: false)
           end
         else
           options[:base_urls].each do |base_url|
@@ -54,9 +54,9 @@ module Middleman
                 say_status("Invalidating #{url}... ", newline: false)
                 cloudflare.zone_file_purge(options[:zone], "#{base_url}#{file}")
               rescue => e
-                say_status(", " + "error: #{e.message}".light_red, header: false)
+                say_status(", " + "error: #{e.message}".red, header: false)
               else
-                say_status("✔".light_green, header: false)
+                say_status("✔".green, header: false)
               end
             end
           end
