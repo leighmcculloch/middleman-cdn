@@ -1,4 +1,6 @@
 # Middleman CDN
+
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/leighmcculloch/middleman-cdn?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Gem Version](https://badge.fury.io/rb/middleman-cdn.svg)](http://badge.fury.io/rb/middleman-cdn) [![Build Status](https://travis-ci.org/leighmcculloch/middleman-cdn.svg)](https://travis-ci.org/leighmcculloch/middleman-cdn) [![Coverage Status](https://img.shields.io/coveralls/leighmcculloch/middleman-cdn.svg)](https://coveralls.io/r/leighmcculloch/middleman-cdn) [![Dependency Status](https://gemnasium.com/leighmcculloch/middleman-cdn.png)](https://gemnasium.com/leighmcculloch/middleman-cdn)
 
 A [middleman](http://middlemanapp.com/) deploy tool for invalidating resources cached
