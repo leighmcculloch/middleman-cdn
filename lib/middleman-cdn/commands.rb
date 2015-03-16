@@ -23,8 +23,15 @@ module Middleman
       end
 
       desc "cdn:cdn_invalidate", "Invalidate your CloudFlare or CloudFront cache"
-      def cdn_invalidate(options = nil)
+      def cdn_invalidate(*args)
         begin
+          if args.first && args.first.respond_to?(:filter)
+            options = args.first
+            files = args.drop(1)
+          else
+            files = args
+          end
+
           if options.nil?
             app_instance = ::Middleman::Application.server.inst
             unless app_instance.respond_to?(:cdn_options)
@@ -40,9 +47,16 @@ module Middleman
             raise
           end
 
-          files = normalize_files(list_files(options.filter))
-          self.class.say_status(nil, "Invalidating #{files.count} files with filter: " + "#{options.filter.source}".magenta.bold)
+          unless files.empty?
+            files = normalize_files(files)
+            message = "Invalidating #{files.count} files:"
+          else
+            files = normalize_files(list_files(options.filter))
+            message = "Invalidating #{files.count} files with filter: #{options.filter.source}"
+          end
+          self.class.say_status(nil, message)
           files.each { |file| self.class.say_status(nil, " • #{file}") }
+
           return if files.empty?
 
           invalidate_all = does_filter_match_all(options.filter)
