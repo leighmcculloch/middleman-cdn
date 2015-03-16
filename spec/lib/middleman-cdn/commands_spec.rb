@@ -128,7 +128,25 @@ describe Middleman::Cli::CDN do
           expect_any_instance_of(::Middleman::Cli::CloudFlareCDN).to receive(:invalidate).with(options.cloudflare, ["/image.png"], all: false)
           expect_any_instance_of(::Middleman::Cli::CloudFrontCDN).to receive(:invalidate).with(options.cloudfront, ["/image.png"], all: false)
           expect_any_instance_of(::Middleman::Cli::FastlyCDN).to receive(:invalidate).with(options.cloudfront, ["/image.png"], all: false)
-          subject.cdn_invalidate(options, ["image.png"])
+          subject.cdn_invalidate(options, "image.png")
+        end
+      end
+
+      context "invalidate multiple files given and not the filter" do
+        let(:options) do
+          OpenStruct.new({
+            cloudflare: {},
+            cloudfront: {},
+            fastly: {},
+            filter: /\.htm$/
+          })
+        end
+
+        it "should invalidate the files with all cdns" do
+          expect_any_instance_of(::Middleman::Cli::CloudFlareCDN).to receive(:invalidate).with(options.cloudflare, ["/image.png", "/index.html", "/"], all: false)
+          expect_any_instance_of(::Middleman::Cli::CloudFrontCDN).to receive(:invalidate).with(options.cloudfront, ["/image.png", "/index.html", "/"], all: false)
+          expect_any_instance_of(::Middleman::Cli::FastlyCDN).to receive(:invalidate).with(options.cloudfront, ["/image.png", "/index.html", "/"], all: false)
+          subject.cdn_invalidate(options, "image.png", "index.html")
         end
       end
 
@@ -146,7 +164,7 @@ describe Middleman::Cli::CDN do
           expect_any_instance_of(::Middleman::Cli::CloudFlareCDN).to receive(:invalidate).with(options.cloudflare, ["/index.html", "/"], all: false)
           expect_any_instance_of(::Middleman::Cli::CloudFrontCDN).to receive(:invalidate).with(options.cloudfront, ["/index.html", "/"], all: false)
           expect_any_instance_of(::Middleman::Cli::FastlyCDN).to receive(:invalidate).with(options.cloudfront, ["/index.html", "/"], all: false)
-          subject.cdn_invalidate(options, ["index.html"])
+          subject.cdn_invalidate(options, "index.html")
         end
       end
     end
