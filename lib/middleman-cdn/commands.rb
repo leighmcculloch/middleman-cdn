@@ -23,8 +23,15 @@ module Middleman
       end
 
       desc "cdn:cdn_invalidate", "Invalidate your CloudFlare or CloudFront cache"
-      def cdn_invalidate(options = nil)
+      def cdn_invalidate(*args)
         begin
+          if args.first && args.first.respond_to?(:filter)
+            options = args.first
+            files = args.drop(1)
+          else
+            files = args
+          end
+
           if options.nil?
             app_instance = ::Middleman::Application.server.inst
             unless app_instance.respond_to?(:cdn_options)
@@ -40,9 +47,16 @@ module Middleman
             raise
           end
 
-          files = list_files(options.filter)
-          self.class.say_status(nil, "Invalidating #{files.count} files with filter: " + "#{options.filter.source}")
+          unless files.empty?
+            files = normalize_files(files)
+            message = "Invalidating #{files.count} files:"
+          else
+            files = normalize_files(list_files(options.filter))
+            message = "Invalidating #{files.count} files with filter: #{options.filter.source}"
+          end
+          self.class.say_status(nil, message)
           files.each { |file| self.class.say_status(nil, " • #{file}") }
+
           return if files.empty?
 
           invalidate_all = does_filter_match_all(options.filter)
@@ -106,20 +120,21 @@ end
 
             # Remove files that do not match filter
             files.reject! { |f| f !~ filter }
-
-            # Add directories of index.html files since they have to be
-            # invalidated as well if :directory_indexes is active
-            files.each do |file|
-              file_dir = file.sub(/\bindex\.html\z/, '')
-              files << file_dir if file_dir != file
-            end
-
-            # Add leading slash
-            files.map! { |f| f.start_with?('/') ? f : "/#{f}" }
           end
         end
       end
 
+      def normalize_files(files)
+        # Add directories of index.html files since they have to be
+        # invalidated as well if :directory_indexes is active
+        files.each do |file|
+          file_dir = file.sub(/\bindex\.html\z/, '')
+          files << file_dir if file_dir != file
+        end
+
+        # Add leading slash
+        files.map! { |f| f.start_with?('/') ? f : "/#{f}" }
+      end
     end
 
     Base.map({"cdn" => "cdn_invalidate"})
