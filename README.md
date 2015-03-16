@@ -194,7 +194,6 @@ as environment variables or provided on the commandline like this example.
 CLOUDFLARE_CLIENT_API_KEY= CLOUDFLARE_EMAIL= bundle exec middleman invalidate
 ```
 
-
 ## Invalidating
 
 Set `after_build` to `true` and the cache will be invalidated after build:  
@@ -204,13 +203,21 @@ bundle exec middleman build
 
 Or, invalidate manually using:  
 ```bash
-bundle exec middleman cdn_invalidate
-```
-
-Or:
-```bash
 bundle exec middleman cdn
 ```
+
+Or, invalidate specific files manually:
+```bash
+bundle exec middleman cdn [file] [file] ...
+```
+
+Or, if you're using `middleman-s3_sync` you can hook middleman-cdn into it's build process, to invalidate only the files that s3_sync uploads, by adding the following to your `config.rb`:
+```ruby
+after_s3_sync do |files_by_status|
+  cdn_invalidate(files_by_status[:updated])
+end
+```
+
 
 ## Example Usage
 
