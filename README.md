@@ -14,11 +14,8 @@ on common Content Delivery Networks (CDNs).
   * [Rackspace CloudFiles](http://www.rackspace.com/cloud/files/)
 * Select files for invalidation with regex.  
 * Automatically invalidate after build.
-* Manually trigger invalidation with a single command.
-
-What's next?
-* Invalidating files only when they've changed.
-* [Open an issue](../../issues/new) if you'd like your CDN provider added.
+* Manually trigger invalidation with a single command on specific files.
+* Invalidating files only when they've changed (if you're using `s3_sync`).
 
 # Usage
 
@@ -211,13 +208,14 @@ Or, invalidate specific files manually:
 bundle exec middleman cdn [file] [file] ...
 ```
 
-Or, if you're using `middleman-s3_sync` you can hook middleman-cdn into it's build process, to invalidate only the files that s3_sync uploads, by adding the following to your `config.rb`:
+## Invalidating with `middleman-s3_sync`
+
+If you're using `middleman-s3_sync` you can hook middleman-cdn into it's build process, to invalidate only the files that s3_sync uploads, by adding the following to your `config.rb`:
 ```ruby
 after_s3_sync do |files_by_status|
   cdn_invalidate(files_by_status[:updated])
 end
 ```
-
 
 ## Example Usage
 
