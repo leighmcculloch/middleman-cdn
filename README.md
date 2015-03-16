@@ -15,7 +15,7 @@ on common Content Delivery Networks (CDNs).
 * Select files for invalidation with regex.  
 * Automatically invalidate after build.
 * Manually trigger invalidation with a single command on specific files.
-* Invalidating files only when they've changed (if you're using `s3_sync`).
+* Invalidating files only when they've changed [if you're using middleman-s3_sync](#invalidating-with-middleman-s3_sync).
 
 # Usage
 
@@ -95,6 +95,9 @@ invalidate them.
 
 Note: Directories containing `index.html` files are automatically included
 when their respective `index.html` is included in the filter.
+
+Alternatively: If you're using `middleman-s3_sync` you can hook middleman-cdn into 
+it's build process. See the [instructions here](#invalidating-with-middleman-s3_sync).
 
 ### Configuration: CloudFlare
 
@@ -208,9 +211,9 @@ Or, invalidate specific files manually:
 bundle exec middleman cdn [file] [file] ...
 ```
 
-## Invalidating with `middleman-s3_sync`
+## Invalidating with middleman-s3_sync
 
-If you're using `middleman-s3_sync` you can hook middleman-cdn into it's build process, to invalidate only the files that s3_sync uploads, by adding the following to your `config.rb`:
+If you're using `middleman-s3_sync` you can hook middleman-cdn into it's build process, to invalidate only the files that s3_sync uploads. Adding the following to your `config.rb`:
 ```ruby
 after_s3_sync do |files_by_status|
   cdn_invalidate(files_by_status[:updated])
