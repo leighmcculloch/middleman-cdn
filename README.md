@@ -20,6 +20,7 @@ on common Content Delivery Networks (CDNs).
 # Usage
 
 ## Installation
+
 Add this to your `Gemfile`:  
 ```ruby
 gem "middleman-cdn"
@@ -213,12 +214,14 @@ bundle exec middleman cdn [file] [file] ...
 
 ## Invalidating with middleman-s3_sync
 
-If you're using `middleman-s3_sync` you can hook middleman-cdn into it's build process, to invalidate only the files that s3_sync uploads. Adding the following to your `config.rb`:
+If you're using `middleman-s3_sync` you can hook middleman-cdn into it's build process, to invalidate only the files that s3_sync uploads. Add the following to your `config.rb`:
 ```ruby
 after_s3_sync do |files_by_status|
   cdn_invalidate(files_by_status[:updated])
 end
 ```
+
+Also, make sure to remove `cdn.after_build = true` from your config, if it was there previously, so the invalidation is not run twice.
 
 ## Example Usage
 
