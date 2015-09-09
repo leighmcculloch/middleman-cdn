@@ -24,7 +24,7 @@ module Middleman
         options[:secret_access_key] ||= ENV['AWS_SECRET_ACCESS_KEY']
         [:access_key_id, :secret_access_key, :distribution_id].each do |key|
           if options[key].blank?
-            say_status("Error: Configuration key cloudfront[:base_urls] is missing.".red)
+            say_status(ANSI.red{ "Error: Configuration key cloudfront[:base_urls] is missing." })
             raise
           end
         end
@@ -41,10 +41,10 @@ module Middleman
           say_status("Invalidating #{files.count} files... ", newline: false)
           invalidation = distribution.invalidations.create(:paths => files)
           if invalidation.status != 'InProgress'
-            say_status("Invalidation status is #{invalidation.status}. Expected 'InProgress'.".red.bold, header: false)
+            say_status(ANSI.red{ ANSI.bold + "Invalidation status is #{invalidation.status}. Expected 'InProgress'." }, header: false)
             raise
           end
-          say_status("✔".green, header: false)
+          say_status(ANSI.green{ "✔" }, header: false)
         else
           slices = files.each_slice(INVALIDATION_LIMIT)
           say_status("Invalidating #{files.count} files in #{slices.count} batch(es) ")
@@ -52,7 +52,7 @@ module Middleman
             say_status("Invalidating batch #{i + 1}... ", newline: false)
             invalidation = distribution.invalidations.create(:paths => slice)
             invalidation.wait_for { ready? } unless i == slices.count - 1
-            say_status("✔".green, header: false)
+            say_status(ANSI.green{ "✔" }, header: false)
           end
         end
         say_status("It might take 10 to 15 minutes until all files are invalidated.")

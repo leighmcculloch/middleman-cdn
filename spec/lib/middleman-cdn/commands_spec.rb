@@ -15,6 +15,12 @@ describe Middleman::Cli::CDN do
         described_class.say_status(nil, "a status")
       end
     end
+
+    context "with a cdn" do 
+      it "should say" do
+        described_class.say_status("the cdn", "a status")
+      end
+    end
   end
 
   describe '#cdn_invalidate' do

@@ -6,7 +6,7 @@ require "middleman-cdn/cdns/cloudfront.rb"
 require "middleman-cdn/cdns/fastly.rb"
 require "middleman-cdn/cdns/maxcdn.rb"
 require "middleman-cdn/cdns/rackspace.rb"
-require "colorize"
+require "ansi/code"
 
 module Middleman
   module Cli
@@ -35,7 +35,7 @@ module Middleman
           if options.nil?
             app_instance = ::Middleman::Application.server.inst
             unless app_instance.respond_to?(:cdn_options)
-              self.class.say_status(nil, "Error: You need to activate the cdn extension in config.rb.\n#{example_configuration}".red)
+              self.class.say_status(nil, ANSI.red{ "Error: You need to activate the cdn extension in config.rb.\n#{example_configuration}" })
               raise
             end
             options = app_instance.cdn_options
@@ -43,7 +43,7 @@ module Middleman
           options.filter ||= /.*/
 
           if cdns.all? { |cdn| options.public_send(cdn.key.to_sym).nil? }
-            self.class.say_status(nil, "Error: You must specify a config for one of the supported CDNs.\n#{example_configuration}".red)
+            self.class.say_status(nil, ANSI.red{ "Error: You must specify a config for one of the supported CDNs.\n#{example_configuration}" })
             raise
           end
 
@@ -72,7 +72,7 @@ module Middleman
 
       def self.say_status(cdn, status, newline: true, header: true, wait_enter: false)
         message = ""
-        message << "#{:cdn.to_s.rjust(12).green}  #{cdn.try(:yellow)}" if header
+        message << "#{ANSI.green { :cdn.to_s.rjust(12)} }  #{ANSI.yellow{ cdn } unless cdn.nil? }" if header
         message << " " if header && cdn
         message << status if status
         print message

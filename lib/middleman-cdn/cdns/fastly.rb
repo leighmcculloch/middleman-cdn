@@ -22,14 +22,14 @@ module Middleman
 
         [:api_key, :base_urls].each do |key|
           if options[key].blank?
-            say_status("Error: Configuration key fastly[:#{key}] is missing.".red)
+            say_status(ANSI.red{ "Error: Configuration key fastly[:#{key}] is missing." })
             raise
           end
         end
 
         options[:base_urls] = [options[:base_urls]] if options[:base_urls].is_a?(String)
         if !options[:base_urls].is_a?(Array)
-          say_status("Error: Configuration key fastly[:base_urls] must be an array and contain at least one base url.".red)
+          say_status(ANSI.red{ "Error: Configuration key fastly[:base_urls] must be an array and contain at least one base url." })
           raise
         end
 
@@ -44,9 +44,9 @@ module Middleman
               say_status("Invalidating #{url}... ", newline: false)
               fastly.purge("#{base_url}#{file}")
             rescue => e
-              say_status(", " + "error: #{e.message}".red, header: false)
+              say_status(ANSI.red{ ", " + "error: #{e.message}" }, header: false)
             else
-              say_status("✔".green, header: false)
+              say_status(ANSI.green{ "✔" }, header: false)
             end
           end
         end

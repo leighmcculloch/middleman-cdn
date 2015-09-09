@@ -28,7 +28,7 @@ module Middleman
 
         [:username, :api_key, :region, :container].each do |key|
           if options[key].blank?
-            say_status("Error: Configuration key rackspace[:#{key}] is missing.".red)
+            say_status(ANSI.red{ "Error: Configuration key rackspace[:#{key}] is missing." })
             raise
           end
         end
@@ -54,9 +54,9 @@ module Middleman
           say_status("Invalidating #{file}...", newline: false)
           rackspace_client.invalidate(region, container, file, notification_email: notification_email)
         rescue => e
-          say_status(" error: #{e.message}".red, header: false)
+          say_status(ANSI.red{ " error: #{e.message}" }, header: false)
         else
-          say_status("✔".green, header: false)
+          say_status(ANSI.green{ "✔" }, header: false)
         end
       end
     end
