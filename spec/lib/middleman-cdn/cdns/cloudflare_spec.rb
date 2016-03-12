@@ -2,6 +2,36 @@
 require 'spec_helper'
 require 'lib/middleman-cdn/cdns/base_protocol'
 
+shared_examples "invalidating the entire zone" do
+  before do
+    allow(double_cloudflare).to receive(:fpurge_ts)
+  end
+
+  it "should invalidate the entire zone" do
+    expect(double_cloudflare).to receive(:fpurge_ts).once.with("example.com")
+    subject.invalidate(options, files, all: all)
+  end
+
+  it "should not invalidate individual files" do
+    expect(double_cloudflare).to_not receive(:zone_file_purge)
+    subject.invalidate(options, files, all: all)
+  end
+end
+
+shared_examples "invalidating individual files" do
+  it "should not invalidate the entire zone" do
+    expect(double_cloudflare).to_not receive(:fpurge_ts)
+    subject.invalidate(options, files, all: all)
+  end
+
+  it "should invalidate individual files" do
+    files.each do |file|
+      expect(double_cloudflare).to receive(:zone_file_purge).once.ordered.with("example.com", "http://example.com#{file}")
+    end
+    subject.invalidate(options, files, all: all)
+  end
+end
+
 describe Middleman::Cli::CloudFlareCDN do
   it_behaves_like "BaseCDN"
 
@@ -13,7 +43,7 @@ describe Middleman::Cli::CloudFlareCDN do
 
   describe '.example_configuration_elements' do
     it "should contain these keys" do
-      required_keys = [:client_api_key, :email, :zone, :base_urls]
+      required_keys = [:client_api_key, :email, :zone, :base_urls, :invalidate_zone_for_many_files]
       expect(described_class.example_configuration_elements.keys).to eq(required_keys)
     end
   end
@@ -26,7 +56,8 @@ describe Middleman::Cli::CloudFlareCDN do
       allow(::CloudFlare).to receive(:connection).and_return(double_cloudflare)
     end
 
-    let(:files) { [ "/index.html", "/", "/test/index.html", "/test/image.png" ] }
+    let(:files) { (1..50).map { |i| "/test/file_#{i}.txt" } }
+    let(:all) { false }
 
     context "all options provided" do
       let(:options) do
@@ -47,18 +78,6 @@ describe Middleman::Cli::CloudFlareCDN do
         subject.invalidate(options, files)
       end
 
-      it "should call cloudflare to purge each file for each base url" do
-        expect(double_cloudflare).to receive(:zone_file_purge).once.ordered.with("example.com", "http://example.com/index.html")
-        expect(double_cloudflare).to receive(:zone_file_purge).once.ordered.with("example.com", "http://example.com/")
-        expect(double_cloudflare).to receive(:zone_file_purge).once.ordered.with("example.com", "http://example.com/test/index.html")
-        expect(double_cloudflare).to receive(:zone_file_purge).once.ordered.with("example.com", "http://example.com/test/image.png")
-        expect(double_cloudflare).to receive(:zone_file_purge).once.ordered.with("example.com", "https://example.com/index.html")
-        expect(double_cloudflare).to receive(:zone_file_purge).once.ordered.with("example.com", "https://example.com/")
-        expect(double_cloudflare).to receive(:zone_file_purge).once.ordered.with("example.com", "https://example.com/test/index.html")
-        expect(double_cloudflare).to receive(:zone_file_purge).once.ordered.with("example.com", "https://example.com/test/image.png")
-        subject.invalidate(options, files)
-      end
-
       it "should output saying invalidating each file checkmarks" do
         files_escaped = files.map { |file| Regexp.escape(file) }
         expect { subject.invalidate(options, files) }.to output(/#{files_escaped.join(".+")}/m).to_stdout
@@ -73,20 +92,45 @@ describe Middleman::Cli::CloudFlareCDN do
         expect { subject.invalidate(options, files) }.to output(/✔/).to_stdout
       end
 
-      context "matches all files" do
+      context "max 50 files to invalidate" do
         before do
-          allow(double_cloudflare).to receive(:fpurge_ts)
+          expect(files.count).to be <= 50
         end
 
-        it "should invalidate the entire zone" do
-          expect(double_cloudflare).to receive(:fpurge_ts).once.with("example.com")
-          subject.invalidate(options, files, all: true)
+        it_behaves_like "invalidating individual files"
+
+        it "should call cloudflare to purge each file for each base url" do
+          files.each do |file|
+            expect(double_cloudflare).to receive(:zone_file_purge).once.ordered.with("example.com", "http://example.com#{file}")
+          end
+          subject.invalidate(options, files)
+        end
+      end
+
+      context "more than 50 files to invalidate" do
+        let(:files) { super() + ["/index.html"] }
+
+        before do
+          expect(files.count).to be > 50
         end
 
-        it "should not invalidate individual files" do
-          expect(double_cloudflare).not_to receive(:zone_file_purge)
-          subject.invalidate(options, files, all: true)
+        context "invalidate_zone_for_many_files is set to true" do
+          let(:options) { super().merge(invalidate_zone_for_many_files: true) }
+
+          it_behaves_like "invalidating the entire zone"
         end
+
+        context "invalidate_zone_for_many_files is set to false" do
+          let(:options) { super().merge(invalidate_zone_for_many_files: false) }
+
+          it_behaves_like "invalidating individual files"
+        end
+      end
+
+      context "matching all files" do
+        let(:all) { true }
+
+        it_behaves_like "invalidating the entire zone"
       end
 
       context "and errors occurs when purging" do

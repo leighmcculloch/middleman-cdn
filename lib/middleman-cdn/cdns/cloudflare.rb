@@ -6,6 +6,8 @@ module Middleman
   module Cli
 
     class CloudFlareCDN < BaseCDN
+      INVALIDATE_ZONE_THRESHOLD = 50
+
       def self.key
         "cloudflare"
       end
@@ -15,7 +17,8 @@ module Middleman
           client_api_key: ['"..."', "# default ENV['CLOUDFLARE_CLIENT_API_KEY']"],
           email: ['"..."', "# default ENV['CLOUDFLARE_EMAIL']"],
           zone: ['"..."', ""],
-          base_urls: [['http://example.com', 'https://example.com'], ""]
+          base_urls: [['http://example.com', 'https://example.com'], ""],
+          invalidate_zone_for_many_files: [true, "# default true"]
         }
       end
 
@@ -37,7 +40,7 @@ module Middleman
         end
 
         cloudflare = ::CloudFlare::connection(options[:client_api_key], options[:email])
-        if all
+        if all || (options[:invalidate_zone_for_many_files] && files.count > INVALIDATE_ZONE_THRESHOLD)
           begin
             say_status("Invalidating zone #{options[:zone]}... ", newline: false)
             cloudflare.fpurge_ts(options[:zone])
