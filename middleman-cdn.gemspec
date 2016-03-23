@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.version     = Middleman::CDN::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Leigh McCulloch"]
+  s.licenses    = ["MIT"]
   s.homepage    = "https://github.com/leighmcculloch/middleman-cdn"
   s.summary     = %q{Invalidate CloudFlare or CloudFront cache after deployment}
   s.description = %q{Invalidate a specific set of files in your CloudFlare or CloudFront cache}
