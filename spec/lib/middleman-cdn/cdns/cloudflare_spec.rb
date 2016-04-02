@@ -114,6 +114,14 @@ describe Middleman::Cli::CloudFlareCDN do
           expect(files.count).to be > 50
         end
 
+        context "invalidate_zone_for_many_files is not set" do
+          before do
+            expect(options.key?(:invalidate_zone_for_many_files)).to be_falsy
+          end
+
+          it_behaves_like "invalidating the entire zone"
+        end
+
         context "invalidate_zone_for_many_files is set to true" do
           let(:options) { super().merge(invalidate_zone_for_many_files: true) }
 
