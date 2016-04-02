@@ -23,6 +23,7 @@ module Middleman
       end
 
       def invalidate(options, files, all: false)
+        options[:invalidate_zone_for_many_files] = true unless options.key?(:invalidate_zone_for_many_files)
         options[:client_api_key] ||= ENV['CLOUDFLARE_CLIENT_API_KEY']
         options[:email] ||= ENV['CLOUDFLARE_EMAIL']
 
