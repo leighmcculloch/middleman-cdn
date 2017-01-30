@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake', '~> 0.9'
   s.add_development_dependency 'rspec', '~> 3.0'
   s.add_development_dependency 'coveralls', '~> 0.7'
+  s.add_development_dependency 'appraisal', '~> 2.1'
 
-  s.add_dependency 'middleman-core', '~> 3.3'
+  s.add_dependency 'middleman', '>= 3.3'
 end

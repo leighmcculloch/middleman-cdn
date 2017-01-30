@@ -4,3 +4,4 @@ coverage
 *.sublime-*
 *.gem
 pkg
+gemfiles/*.gemfile.lock

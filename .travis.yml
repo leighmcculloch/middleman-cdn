@@ -6,3 +6,11 @@ rvm:
   - 2.3.0
 before_install:
   - gem install bundler
+gemfile:
+  - gemfiles/middleman_3.3.gemfile
+  - gemfiles/middleman_3.4.gemfile
+  - gemfiles/middleman_3_stable.gemfile
+  - gemfiles/middleman_4.0.gemfile
+  - gemfiles/middleman_4.1.gemfile
+  - gemfiles/middleman_4.2.gemfile
+  - gemfiles/middleman_master.gemfile
