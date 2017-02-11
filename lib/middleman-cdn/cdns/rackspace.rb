@@ -1,4 +1,3 @@
-#Encoding: UTF-8
 require "httparty"
 require "active_support/core_ext/string"
 require "middleman-cdn/clients/rackspace.rb"
