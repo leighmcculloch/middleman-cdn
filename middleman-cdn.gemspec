@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files -z`.split("\0")
   s.require_paths = ["lib"]
 
-  s.add_dependency 'fog', '~> 1.9'
+  s.add_dependency 'fog-aws', '~> 1.4'
   s.add_dependency 'cloudflare', '~> 2.0'
   s.add_dependency 'fastly', '~> 1.1'
   s.add_dependency 'maxcdn', '~> 0.1'
