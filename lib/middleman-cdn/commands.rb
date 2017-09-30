@@ -11,7 +11,7 @@ require "ansi/code"
 module Middleman
   module Cli
 
-    class CDN < Thor
+    class CDN < Thor::Group
       include Thor::Actions
 
       check_unknown_options!
@@ -22,23 +22,17 @@ module Middleman
         true
       end
 
-      desc "cdn:cdn_invalidate", "Invalidate your CloudFlare or CloudFront cache"
       def cdn_invalidate(*args)
         begin
-          if args.first && args.first.respond_to?(:filter)
-            options = args.first
-            files = args.drop(1)
+          options, files = if args.first && args.first.respond_to?(:filter)
+            [args.first, args.drop(1)]
           else
-            files = args
+            [Middleman::CDN::Extension.options, args]
           end
 
           if options.nil?
-            app_instance = ::Middleman::Application.server.inst
-            unless app_instance.respond_to?(:cdn_options)
-              self.class.say_status(nil, ANSI.red{ "Error: You need to activate the cdn extension in config.rb.\n#{example_configuration}" })
-              raise
-            end
-            options = app_instance.cdn_options
+            self.class.say_status(nil, ANSI.red{ "Error: You need to activate the cdn extension in config.rb.\n#{example_configuration}" })
+            return
           end
           options.filter ||= /.*/
 
@@ -135,8 +129,10 @@ end
         # Add leading slash
         files.map! { |f| f.start_with?('/') ? f : "/#{f}" }
       end
-    end
 
-    Base.map({"cdn" => "cdn_invalidate"})
+      Base.register(self, 'cdn_invalidate', 'cdn_invalidate [options]', 'Invalidate CDN')
+
+      Base.map('cdn' => 'cdn_invalidate')
+    end
   end
 end

@@ -1,4 +1,3 @@
-#Encoding: UTF-8
 require "maxcdn"
 require "active_support/core_ext/string"
 

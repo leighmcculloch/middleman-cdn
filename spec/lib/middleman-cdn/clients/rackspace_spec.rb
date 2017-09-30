@@ -1,4 +1,3 @@
-#Encoding: UTF-8
 require 'spec_helper'
 require 'lib/middleman-cdn/clients/rackspace_response_doubles.rb'
 

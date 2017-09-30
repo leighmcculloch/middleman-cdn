@@ -1,4 +1,3 @@
-#Encoding: UTF-8
 require 'spec_helper'
 require 'lib/middleman-cdn/cdns/base_protocol'
 

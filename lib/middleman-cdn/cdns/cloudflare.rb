@@ -1,4 +1,3 @@
-#Encoding: UTF-8
 require "cloudflare"
 require "active_support/core_ext/string"
 
