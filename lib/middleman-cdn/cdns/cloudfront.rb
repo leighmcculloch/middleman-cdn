@@ -1,4 +1,4 @@
-require "fog"
+require "fog/aws"
 require "active_support/core_ext/string"
 
 module Middleman
