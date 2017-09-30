@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Leigh McCulloch"]
   s.licenses    = ["MIT"]
   s.homepage    = "https://github.com/leighmcculloch/middleman-cdn"
-  s.summary     = %q{Invalidate CloudFlare or CloudFront cache after deployment}
-  s.description = %q{Invalidate a specific set of files in your CloudFlare or CloudFront cache}
+  s.summary     = %q{Invalidate CloudFlare, AWS CloudFront, Rackspace, Fastly, or MaxCDN cache after deployment}
+  s.description = %q{Invalidate a specific set of files in your CloudFlare, AWS CloudFront, Rackspace, Fastly, or MaxCDN cache}
 
   s.files         = `git ls-files -z`.split("\0")
   s.require_paths = ["lib"]
