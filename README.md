@@ -232,6 +232,8 @@ I'm using middleman-cdn on my personal website [leighmcculloch.com](http://leigh
 
 Middleman CDN is a fork off [Middleman CloudFront](https://github.com/andrusha/middleman-cloudfront) and I used it as the base for building this extension. The code was well structured and easy to understand. It was easy to break out the CloudFront specific logic and to add support for CloudFlare and the other CDNs. My gratitude goes to @andrusha and @manuelmeurer for their work on Middleman CloudFront.
 
+Thanks to @manuelmeurer for helping port this gem for Middleman v4 and [numerous other valuable contributions](https://github.com/leighmcculloch/middleman-cdn/commits?author=manuelmeurer).
+
 Thanks to @b4k3r for the [Cloudflare gem](https://github.com/b4k3r/cloudflare) that made invalidating CloudFlare files a breeze.
 
 Thanks to @geemus and the many contributors to the [fog gem](https://github.com/fog/fog) that made invalidating CloudFront easy.
