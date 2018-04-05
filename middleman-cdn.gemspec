@@ -29,5 +29,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'coveralls', '~> 0.7'
   s.add_development_dependency 'appraisal', '~> 2.1'
 
-  s.add_dependency 'middleman', '~> 4.2'
+  s.add_dependency 'middleman', '>= 3.2'
 end
