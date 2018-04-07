@@ -52,7 +52,7 @@ describe Middleman::Cli::CloudFlareCDN do
 
     before do
       allow(double_cloudflare).to receive(:zone_file_purge)
-      allow(::CloudFlare).to receive(:connection).and_return(double_cloudflare)
+      allow(::Cloudflare).to receive(:connection).and_return(double_cloudflare)
     end
 
     let(:files) { (1..50).map { |i| "/test/file_#{i}.txt" } }
@@ -69,7 +69,7 @@ describe Middleman::Cli::CloudFlareCDN do
       end
 
       it "should connect to cloudflare with credentails" do
-        expect(::CloudFlare).to receive(:connection).with("000000000000000000000", "test@example.com")
+        expect(::Cloudflare).to receive(:connection).with("000000000000000000000", "test@example.com")
         subject.invalidate(options, files)
       end
 
@@ -166,7 +166,7 @@ describe Middleman::Cli::CloudFlareCDN do
       end
 
       it "should connect to cloudflare with environment variable credentails" do
-        expect(::CloudFlare).to receive(:connection).with("111111111111111111111", "test-env@example.com")
+        expect(::Cloudflare).to receive(:connection).with("111111111111111111111", "test-env@example.com")
         subject.invalidate(options, files)
       end
 

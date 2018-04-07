@@ -39,7 +39,7 @@ module Middleman
           raise
         end
 
-        cloudflare = ::CloudFlare::connection(options[:client_api_key], options[:email])
+        cloudflare = ::Cloudflare::connection(options[:client_api_key], options[:email])
         if all || (options[:invalidate_zone_for_many_files] && files.count > INVALIDATE_ZONE_THRESHOLD)
           begin
             say_status("Invalidating zone #{options[:zone]}... ", newline: false)
