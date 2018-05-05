@@ -122,11 +122,11 @@ end
         # Add directories of index.html files since they have to be
         # invalidated as well if :directory_indexes is active
         files.each do |file|
-	  # For /dir/index.html add /dir/
+          # For /dir/index.html add /dir/
           file_dir = file.sub(/\bindex\.html\z/, '')
           files << file_dir if file_dir != file
 
-	  # For /dir/index.html add /dir
+          # For /dir/index.html add /dir
           file_dir_no_slash = file.sub(/\/index\.html\z/, '')
           files << file_dir_no_slash if file_dir_no_slash != file
         end
