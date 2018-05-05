@@ -94,8 +94,10 @@ It's better to always invalidate only the files you need. If you're using
 generate fingerprinted CSS, JS and images, then you should never need to
 invalidate them.
 
-Note: Directories containing `index.html` files are automatically included
-when their respective `index.html` is included in the filter.
+Note: Directories containing `index.html` files are automatically included when
+their respective `index.html` is included in the filter. Both the slashed and
+non-slashed version of the directory are invalidated. e.g. The file
+`/blog/index.html` will also invalidate `/blog/` and `/blog`.
 
 Alternatively: If you're using `middleman-s3_sync` you can hook middleman-cdn into 
 it's build process. See the [instructions here](#invalidating-with-middleman-s3_sync).
