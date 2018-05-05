@@ -48,6 +48,7 @@ module Middleman
             files = normalize_files(list_files(options.filter))
             message = "Invalidating #{files.count} files with filter: #{options.filter.source}"
           end
+
           self.class.say_status(nil, message)
           files.each { |file| self.class.say_status(nil, " • #{file}") }
 
@@ -121,13 +122,21 @@ end
       def normalize_files(files)
         # Add directories of index.html files since they have to be
         # invalidated as well if :directory_indexes is active
-        files.each do |file|
-          file_dir = file.sub(/\bindex\.html\z/, '')
-          files << file_dir if file_dir != file
-        end
+        files += files.collect do |file|
+          file.sub(/\bindex\.html\z/, '') if file.ends_with?('index.html')
+        end.compact
+
+        # Add directories without trailing slashes also, so if a user visited
+        # /blog it will still be invalidated.
+        files += files.collect do |file|
+          file.sub(/\/index\.html\z/, '') if file.ends_with?('/index.html')
+        end.compact
 
         # Add leading slash
         files.map! { |f| f.start_with?('/') ? f : "/#{f}" }
+
+        # Remove any duplicates
+        files.uniq
       end
 
       Base.register(self, 'cdn_invalidate', 'cdn_invalidate [options]', 'Invalidate CDN')
