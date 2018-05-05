@@ -58,7 +58,7 @@ describe Middleman::Cli::CDN do
         end
 
         it "should invalidate the files with only cloudflare" do
-          expect_any_instance_of(::Middleman::Cli::CloudFlareCDN).to receive(:invalidate).with(options.cloudflare, ["/index.html", "/image.png", "/blog/index.html", "/", "/blog/", "/blog"], all: true)
+          expect_any_instance_of(::Middleman::Cli::CloudFlareCDN).to receive(:invalidate).with(options.cloudflare, ["/index.html", "/", "/image.png", "/blog/index.html", "/blog/", "/blog"], all: true)
           expect_any_instance_of(::Middleman::Cli::CloudFrontCDN).to_not receive(:invalidate)
           expect_any_instance_of(::Middleman::Cli::FastlyCDN).to_not receive(:invalidate)
           subject.cdn_invalidate(options)
@@ -76,9 +76,9 @@ describe Middleman::Cli::CDN do
         end
 
         it "should invalidate the files with all cdns" do
-          expect_any_instance_of(::Middleman::Cli::CloudFlareCDN).to receive(:invalidate).with(options.cloudflare, ["/index.html", "/image.png", "/blog/index.html", "/", "/blog/", "/blog"], all: true)
-          expect_any_instance_of(::Middleman::Cli::CloudFrontCDN).to receive(:invalidate).with(options.cloudfront, ["/index.html", "/image.png", "/blog/index.html", "/", "/blog/", "/blog"], all: true)
-          expect_any_instance_of(::Middleman::Cli::FastlyCDN).to receive(:invalidate).with(options.fastly, ["/index.html", "/image.png", "/blog/index.html", "/", "/blog/", "/blog"], all: true)
+          expect_any_instance_of(::Middleman::Cli::CloudFlareCDN).to receive(:invalidate).with(options.cloudflare, ["/index.html", "/", "/image.png", "/blog/index.html", "/blog/", "/blog"], all: true)
+          expect_any_instance_of(::Middleman::Cli::CloudFrontCDN).to receive(:invalidate).with(options.cloudfront, ["/index.html", "/", "/image.png", "/blog/index.html", "/blog/", "/blog"], all: true)
+          expect_any_instance_of(::Middleman::Cli::FastlyCDN).to receive(:invalidate).with(options.fastly, ["/index.html", "/",  "/image.png", "/blog/index.html", "/blog/", "/blog"], all: true)
           subject.cdn_invalidate(options)
         end
       end
@@ -95,9 +95,9 @@ describe Middleman::Cli::CDN do
       end
 
       it "should invalidate the files with all cdns" do
-        expect_any_instance_of(::Middleman::Cli::CloudFlareCDN).to receive(:invalidate).with(options.cloudflare, ["/index.html", "/blog/index.html", "/", "/blog/", "/blog"], all: false)
-        expect_any_instance_of(::Middleman::Cli::CloudFrontCDN).to receive(:invalidate).with(options.cloudfront, ["/index.html", "/blog/index.html", "/", "/blog/", "/blog"], all: false)
-        expect_any_instance_of(::Middleman::Cli::FastlyCDN).to receive(:invalidate).with(options.cloudfront, ["/index.html", "/blog/index.html", "/", "/blog/", "/blog"], all: false)
+        expect_any_instance_of(::Middleman::Cli::CloudFlareCDN).to receive(:invalidate).with(options.cloudflare, ["/index.html", "/", "/blog/index.html", "/blog/", "/blog"], all: false)
+        expect_any_instance_of(::Middleman::Cli::CloudFrontCDN).to receive(:invalidate).with(options.cloudfront, ["/index.html", "/", "/blog/index.html", "/blog/", "/blog"], all: false)
+        expect_any_instance_of(::Middleman::Cli::FastlyCDN).to receive(:invalidate).with(options.cloudfront, ["/index.html", "/", "/blog/index.html", "/blog/", "/blog"], all: false)
         subject.cdn_invalidate(options)
       end
     end
