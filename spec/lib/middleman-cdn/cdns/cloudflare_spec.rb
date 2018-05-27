@@ -2,31 +2,25 @@ require 'spec_helper'
 require 'lib/middleman-cdn/cdns/base_protocol'
 
 shared_examples "invalidating the entire zone" do
-  before do
-    allow(double_cloudflare).to receive(:fpurge_ts)
-  end
-
   it "should invalidate the entire zone" do
-    expect(double_cloudflare).to receive(:fpurge_ts).once.with("example.com")
+    expect(double_zone).to receive(:purge_cache).once.with(no_args)
     subject.invalidate(options, files, all: all)
   end
 
   it "should not invalidate individual files" do
-    expect(double_cloudflare).to_not receive(:zone_file_purge)
+    expect(double_zone).to_not receive(:purge_cache).with(files: file_urls)
     subject.invalidate(options, files, all: all)
   end
 end
 
 shared_examples "invalidating individual files" do
   it "should not invalidate the entire zone" do
-    expect(double_cloudflare).to_not receive(:fpurge_ts)
+    expect(double_zone).to_not receive(:purge_cache).with(no_args)
     subject.invalidate(options, files, all: all)
   end
 
   it "should invalidate individual files" do
-    files.each do |file|
-      expect(double_cloudflare).to receive(:zone_file_purge).once.ordered.with("example.com", "http://example.com#{file}")
-    end
+    expect(double_zone).to receive(:purge_cache).once.ordered.with(files: file_urls)
     subject.invalidate(options, files, all: all)
   end
 end
@@ -47,15 +41,46 @@ describe Middleman::Cli::CloudFlareCDN do
     end
   end
 
+  describe "Cloudflare API" do
+    let(:options) do
+      {
+        key: '000000000000000000000',
+        email: 'test@example.com'
+      }
+    end
+
+    let(:cloudflare_module) { ::Cloudflare }
+    let(:cloudflare) { cloudflare_module.connect(options) }
+
+    it "should have #connect method" do
+      expect(cloudflare_module).to respond_to(:connect).with_keywords(:key, :email)
+    end
+
+    context 'zone' do
+      it "should have #zones method" do
+        expect(cloudflare).to respond_to(:zones)
+      end
+
+      it "should have #zones.find_by_name method" do
+        expect(cloudflare.zones).to respond_to(:find_by_name).with(1).argument
+      end
+    end
+  end
+
   describe '#invalidate' do
     let(:double_cloudflare) { double("::Cloudflare") }
+    let(:double_zone) { double("::Cloudflare::Zone") }
 
     before do
-      allow(double_cloudflare).to receive(:zone_file_purge)
-      allow(::Cloudflare).to receive(:connection).and_return(double_cloudflare)
+      allow(double_zone).to receive(:purge_cache)
+      allow(::Cloudflare).to receive(:connect).and_return(double_cloudflare)
+      allow(double_cloudflare).to receive_message_chain('zones.find_by_name').and_return(double_zone)
     end
 
     let(:files) { (1..50).map { |i| "/test/file_#{i}.txt" } }
+    let(:http_file_urls) { files.map { |file| "http://example.com#{file}" } }
+    let(:https_file_urls) { files.map { |file| "https://example.com#{file}" } }
+    let(:file_urls) { http_file_urls.concat(https_file_urls) }
     let(:all) { false }
 
     context "all options provided" do
@@ -69,7 +94,7 @@ describe Middleman::Cli::CloudFlareCDN do
       end
 
       it "should connect to cloudflare with credentails" do
-        expect(::Cloudflare).to receive(:connection).with("000000000000000000000", "test@example.com")
+        expect(::Cloudflare).to receive(:connect).with(key: "000000000000000000000", email: "test@example.com")
         subject.invalidate(options, files)
       end
 
@@ -99,9 +124,7 @@ describe Middleman::Cli::CloudFlareCDN do
         it_behaves_like "invalidating individual files"
 
         it "should call cloudflare to purge each file for each base url" do
-          files.each do |file|
-            expect(double_cloudflare).to receive(:zone_file_purge).once.ordered.with("example.com", "http://example.com#{file}")
-          end
+          expect(double_zone).to receive(:purge_cache).once.with(files: file_urls)
           subject.invalidate(options, files)
         end
       end
@@ -142,7 +165,7 @@ describe Middleman::Cli::CloudFlareCDN do
 
       context "and errors occurs when purging" do
         before do
-          allow(double_cloudflare).to receive(:zone_file_purge).and_raise(StandardError)
+          allow(double_zone).to receive(:purge_cache).and_raise(StandardError)
         end
 
         it "should output saying error information" do
@@ -166,7 +189,7 @@ describe Middleman::Cli::CloudFlareCDN do
       end
 
       it "should connect to cloudflare with environment variable credentails" do
-        expect(::Cloudflare).to receive(:connection).with("111111111111111111111", "test-env@example.com")
+        expect(::Cloudflare).to receive(:connect).with(key: "111111111111111111111", email: "test-env@example.com")
         subject.invalidate(options, files)
       end
 
