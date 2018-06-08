@@ -56,13 +56,28 @@ describe Middleman::Cli::CloudFlareCDN do
       expect(cloudflare_module).to respond_to(:connect).with_keywords(:key, :email)
     end
 
-    context 'zone' do
+    context 'zones' do
       it "should have #zones method" do
         expect(cloudflare).to respond_to(:zones)
       end
 
       it "should have #zones.find_by_name method" do
         expect(cloudflare.zones).to respond_to(:find_by_name).with(1).argument
+      end
+    end
+
+    context 'zone' do
+      before(:each) do
+        allow(cloudflare_response).to receive(:result) { double }
+        allow_any_instance_of(zone_class).to receive(:get) { cloudflare_response }
+      end
+
+      let(:zone_class) { ::Cloudflare::Zone }
+      let(:zone) { zone_class.new('http://example.com') }
+      let(:cloudflare_response) { double }
+
+      it "should have #purge_cache method" do
+        expect(zone).to respond_to(:purge_cache)
       end
     end
   end

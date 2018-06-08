@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency 'fog-aws', '~> 1.4'
-  s.add_dependency 'cloudflare', '~> 3.0'
+  s.add_dependency 'cloudflare', '~> 3.2.0'
   s.add_dependency 'fastly', '~> 1.1'
   s.add_dependency 'maxcdn', '~> 0.1'
   s.add_dependency 'ansi', '~> 1.5'
