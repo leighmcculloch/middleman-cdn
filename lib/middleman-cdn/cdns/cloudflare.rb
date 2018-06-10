@@ -39,29 +39,29 @@ module Middleman
           raise
         end
 
-        cloudflare = ::Cloudflare::connection(options[:client_api_key], options[:email])
+        cloudflare = ::Cloudflare::connect(key: options[:client_api_key], email: options[:email])
+        zone = cloudflare.zones.find_by_name(options[:zone])
         if all || (options[:invalidate_zone_for_many_files] && files.count > INVALIDATE_ZONE_THRESHOLD)
           begin
-            say_status("Invalidating zone #{options[:zone]}... ", newline: false)
-            cloudflare.fpurge_ts(options[:zone])
+            say_status("Invalidating zone #{zone}... ", newline: false)
+            zone.purge_cache
           rescue => e
             say_status(", " + ANSI.red{ "error: #{e.message}" }, header: false)
           else
             say_status(ANSI.green{ "✔" }, header: false)
           end
         else
-          options[:base_urls].each do |base_url|
-            files.each do |file|
-              begin
-                url = "#{base_url}#{file}"
-                say_status("Invalidating #{url}... ", newline: false)
-                cloudflare.zone_file_purge(options[:zone], "#{base_url}#{file}")
-              rescue => e
-                say_status(", " + ANSI.red{ "error: #{e.message}" }, header: false)
-              else
-                say_status(ANSI.green{ "✔" }, header: false)
-              end
+          begin
+            urls = options[:base_urls].map do |base_url|
+              files.map { |file| "#{base_url}#{file}" }
             end
+
+            say_status("Invalidating #{urls}... ", newline: false)
+            zone.purge_cache(files: urls.flatten)
+          rescue => e
+            say_status(", " + ANSI.red{ "error: #{e.message}" }, header: false)
+          else
+            say_status(ANSI.green{ "✔" }, header: false)
           end
         end
       end
