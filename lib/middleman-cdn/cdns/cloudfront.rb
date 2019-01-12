@@ -24,7 +24,7 @@ module Middleman
         options[:secret_access_key] ||= ENV['AWS_SECRET_ACCESS_KEY']
         [:access_key_id, :secret_access_key, :distribution_id].each do |key|
           if options[key].blank?
-            say_status(ANSI.red{ "Error: Configuration key cloudfront[:base_urls] is missing." })
+            say_status(ANSI.red{ "Error: Configuration key cloudfront[:#{key}] is missing." })
             raise
           end
         end
